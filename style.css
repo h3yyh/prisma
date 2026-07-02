@@ -15,40 +15,49 @@ body{
   height:78px;
   background:#000;
 
-  display:grid;
-  grid-template-columns:500px 1fr 70px;
-
+  display:flex;
   align-items:center;
 
   padding:0 28px;
 }
 
 .brand{
-  display:flex;
+  display:inline-flex;
   align-items:center;
-  justify-content:flex-start;
   text-decoration:none;
+  width:max-content;
+  flex:0 0 auto;
 }
 
 .brand img{
   height:42px;
   display:block;
+  pointer-events:none;
 }
 
 .menu{
   display:flex;
   align-items:center;
-  justify-content:flex-start;
   gap:18px;
+
+  margin-left:300px;
+  flex:1;
+}
+
+.menu-image{
+  display:inline-flex;
+  width:max-content;
+  text-decoration:none;
 }
 
 .menu-image img{
   height:42px;
   display:block;
+  pointer-events:none;
   transition:0.12s;
 }
 
-.menu-image img:hover{
+.menu-image:hover img{
   transform:translateY(-1px);
 }
 
@@ -57,7 +66,7 @@ body{
   height:46px;
 
   border-radius:50%;
-  justify-self:end;
+  flex:0 0 auto;
 
   background:linear-gradient(
     135deg,
@@ -79,7 +88,6 @@ body{
 @media (max-width:1000px){
 
   .topbar{
-    grid-template-columns:220px 1fr 50px;
     padding:0 18px;
   }
 
@@ -88,6 +96,7 @@ body{
   }
 
   .menu{
+    margin-left:40px;
     gap:12px;
   }
 
