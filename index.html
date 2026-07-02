@@ -10,27 +10,19 @@
 
   <header class="topbar">
 
-    <a href="#" class="brand" id="homeButton">
-      <img src="prisma-logo.png" alt="PRISMA">
-    </a>
+    <div class="brand-area">
+      <a href="#" class="brand-logo" id="homeButton">
+        <img src="prisma-logo.png" alt="PRISMA">
+      </a>
+    </div>
 
     <nav class="menu">
 
-      <a
-        href="#"
-        class="menu-image active"
-        data-normal="personagens.png"
-        data-active="personagens-active.png"
-      >
+      <a href="#" class="menu-image active" data-normal="personagens.png" data-active="personagens-active.png">
         <img src="personagens-active.png" alt="Personagens">
       </a>
 
-      <a
-        href="#"
-        class="menu-image"
-        data-normal="campanhas.png"
-        data-active="campanhas-active.png"
-      >
+      <a href="#" class="menu-image" data-normal="campanhas.png" data-active="campanhas-active.png">
         <img src="campanhas.png" alt="Campanhas">
       </a>
 
@@ -49,14 +41,12 @@
 
   <script>
     const buttons = document.querySelectorAll(".menu-image");
-
     const selectSound = document.getElementById("selectSound");
     const homeSound = document.getElementById("homeSound");
+    const homeButton = document.getElementById("homeButton");
 
     selectSound.volume = 0.25;
     homeSound.volume = 0.25;
-
-    const homeButton = document.getElementById("homeButton");
 
     buttons.forEach(button => {
       button.addEventListener("click", function(event){
