@@ -42,26 +42,24 @@
 
   <div class="line"></div>
 
-  <main class="hero">
-
-  </main>
+  <main class="hero"></main>
 
   <audio id="selectSound" src="sndselectundertale.mp3"></audio>
   <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
 
   <script>
-
     const buttons = document.querySelectorAll(".menu-image");
 
     const selectSound = document.getElementById("selectSound");
     const homeSound = document.getElementById("homeSound");
 
+    selectSound.volume = 0.25;
+    homeSound.volume = 0.25;
+
     const homeButton = document.getElementById("homeButton");
 
     buttons.forEach(button => {
-
       button.addEventListener("click", function(event){
-
         event.preventDefault();
 
         selectSound.currentTime = 0;
@@ -74,13 +72,10 @@
 
         this.classList.add("active");
         this.querySelector("img").src = this.dataset.active;
-
       });
-
     });
 
     homeButton.addEventListener("click", function(event){
-
       event.preventDefault();
 
       homeSound.currentTime = 0;
@@ -90,9 +85,7 @@
         item.classList.remove("active");
         item.querySelector("img").src = item.dataset.normal;
       });
-
     });
-
   </script>
 
 </body>
