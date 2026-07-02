@@ -11,100 +11,195 @@ body{
     overflow-x:hidden;
 }
 
+/* ========================= */
+/* TOPO */
+/* ========================= */
+
 .topbar{
+
     height:78px;
+
     background:#000;
+
     display:flex;
     align-items:center;
+
     padding:0 28px;
+
 }
 
+/* ========================= */
+/* LOGO */
+/* ========================= */
+
 .brand-area{
+
     width:500px;
+
     display:flex;
     align-items:center;
+
 }
 
 .brand-logo{
+
     display:inline-flex;
     align-items:center;
+
     width:fit-content;
     height:fit-content;
+
     text-decoration:none;
+
     cursor:pointer;
+
 }
 
 .brand-logo img{
+
     height:42px;
+
     display:block;
+
     pointer-events:none;
+
 }
 
+/* ========================= */
+/* MENU */
+/* ========================= */
+
 .menu{
+
     display:flex;
     align-items:center;
+
     gap:18px;
+
     flex:1;
+
 }
 
 .menu-image{
+
     display:inline-flex;
+
     align-items:center;
     justify-content:center;
+
     width:fit-content;
     height:fit-content;
+
     text-decoration:none;
+
     cursor:pointer;
+
 }
 
 .menu-image img{
+
     height:42px;
+
     display:block;
+
     pointer-events:none;
+
+    transition:transform .12s ease;
+
 }
+
+.menu-image:hover img{
+
+    transform:translateY(-1px);
+
+}
+
+/* ========================= */
+/* PERFIL */
+/* ========================= */
 
 .profile{
+
     width:46px;
     height:46px;
+
     border-radius:50%;
+
     flex:0 0 auto;
-    background:linear-gradient(135deg, #7c3cff, #00aaff);
+
+    background:linear-gradient(
+        135deg,
+        #7c3cff,
+        #00aaff
+    );
+
 }
+
+/* ========================= */
+/* LINHA */
+/* ========================= */
 
 .line{
+
     height:2px;
-    background:white;
+
+    background:#fff;
+
 }
+
+/* ========================= */
+/* CONTEÚDO */
+/* ========================= */
 
 .hero{
+
     min-height:calc(100vh - 80px);
+
     background:#000;
+
 }
 
+/* ========================= */
+/* RESPONSIVO */
+/* ========================= */
+
 @media (max-width:1000px){
+
     .topbar{
+
         padding:0 18px;
+
     }
 
     .brand-area{
+
         width:220px;
+
     }
 
     .brand-logo img{
+
         height:34px;
+
     }
 
     .menu{
+
         gap:12px;
+
     }
 
     .menu-image img{
+
         height:34px;
+
     }
 
     .profile{
+
         width:38px;
         height:38px;
+
     }
-}
+
 }
