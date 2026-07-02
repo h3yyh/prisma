@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA - Conexão</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topbar">
+
+    <a href="#" class="brand" id="homeButton">
+      <img src="prisma-logo.png" alt="PRISMA">
+    </a>
+
+    <nav class="menu">
+
+      <a
+        href="#"
+        class="menu-image active"
+        data-normal="personagens.png"
+        data-active="personagens-active.png"
+      >
+        <img src="personagens-active.png" alt="Personagens">
+      </a>
+
+      <a
+        href="#"
+        class="menu-image"
+        data-normal="campanhas.png"
+        data-active="campanhas-active.png"
+      >
+        <img src="campanhas.png" alt="Campanhas">
+      </a>
+
+    </nav>
+
+    <div class="profile"></div>
+
+  </header>
+
+  <div class="line"></div>
+
+  <main class="hero">
+
+  </main>
+
+  <audio id="selectSound" src="sndselectundertale.mp3"></audio>
+  <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
+
+  <script>
+
+    const buttons = document.querySelectorAll(".menu-image");
+
+    const selectSound = document.getElementById("selectSound");
+    const homeSound = document.getElementById("homeSound");
+
+    const homeButton = document.getElementById("homeButton");
+
+    buttons.forEach(button => {
+
+      button.addEventListener("click", function(event){
+
+        event.preventDefault();
+
+        selectSound.currentTime = 0;
+        selectSound.play();
+
+        buttons.forEach(item => {
+          item.classList.remove("active");
+          item.querySelector("img").src = item.dataset.normal;
+        });
+
+        this.classList.add("active");
+        this.querySelector("img").src = this.dataset.active;
+
+      });
+
+    });
+
+    homeButton.addEventListener("click", function(event){
+
+      event.preventDefault();
+
+      homeSound.currentTime = 0;
+      homeSound.play();
+
+      buttons.forEach(item => {
+        item.classList.remove("active");
+        item.querySelector("img").src = item.dataset.normal;
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>
