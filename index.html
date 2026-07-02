@@ -1,86 +1,123 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PRISMA</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISMA</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <header class="topbar">
+<header class="topbar">
 
     <div class="brand-area">
-      <a href="#" class="brand-logo" id="homeButton">
-        <img src="prisma-logo.png" alt="PRISMA">
-      </a>
+        <a href="#" class="brand-logo" id="homeButton">
+            <img src="prisma-logo.png" alt="PRISMA">
+        </a>
     </div>
 
     <nav class="menu">
 
-      <a href="#" class="menu-image active" data-normal="personagens(1).png" data-active="personagens-active(1).png">
-        <img src="personagens-active(1).png" alt="Personagens">
-      </a>
+        <a
+            href="#"
+            class="menu-image active"
+            data-normal="personagens.png"
+            data-active="personagens-active.png">
 
-      <a href="#" class="menu-image" data-normal="campanhas(1).png" data-active="campanhas-active.jpg">
-        <img src="campanhas(1).png" alt="Campanhas">
-      </a>
+            <img src="personagens-active.png" alt="Personagens">
 
-      <a href="#" class="menu-image" data-normal="sistema.jpg" data-active="sistema-active(1).png">
-        <img src="sistema.jpg" alt="Sistema">
-      </a>
+        </a>
+
+        <a
+            href="#"
+            class="menu-image"
+            data-normal="campanhas.png"
+            data-active="campanhas-active.jpg">
+
+            <img src="campanhas.png" alt="Campanhas">
+
+        </a>
+
+        <a
+            href="#"
+            class="menu-image"
+            data-normal="sistema.jpg"
+            data-active="sistema-active.png">
+
+            <img src="sistema.jpg" alt="Sistema">
+
+        </a>
 
     </nav>
 
     <div class="profile"></div>
 
-  </header>
+</header>
 
-  <div class="line"></div>
+<div class="line"></div>
 
-  <main class="hero"></main>
+<main class="hero"></main>
 
-  <audio id="selectSound" src="sndselectundertale.mp3"></audio>
-  <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
+<audio id="selectSound" src="sndselectundertale.mp3"></audio>
+<audio id="homeSound" src="snd_saveprisma.mp3"></audio>
 
-  <script>
-    const buttons = document.querySelectorAll(".menu-image");
-    const selectSound = document.getElementById("selectSound");
-    const homeSound = document.getElementById("homeSound");
-    const homeButton = document.getElementById("homeButton");
+<script>
 
-    selectSound.volume = 0.25;
-    homeSound.volume = 0.25;
+const buttons = document.querySelectorAll(".menu-image");
 
-    buttons.forEach(button => {
-      button.addEventListener("click", function(event){
-        event.preventDefault();
+const selectSound = document.getElementById("selectSound");
+const homeSound = document.getElementById("homeSound");
 
-        selectSound.currentTime = 0;
+selectSound.volume = 0.25;
+homeSound.volume = 0.25;
+
+const homeButton = document.getElementById("homeButton");
+
+buttons.forEach(button=>{
+
+    button.addEventListener("click",function(e){
+
+        e.preventDefault();
+
+        selectSound.currentTime=0;
         selectSound.play();
 
-        buttons.forEach(item => {
-          item.classList.remove("active");
-          item.querySelector("img").src = item.dataset.normal;
+        buttons.forEach(item=>{
+
+            item.classList.remove("active");
+
+            item.querySelector("img").src=item.dataset.normal;
+
         });
 
         this.classList.add("active");
-        this.querySelector("img").src = this.dataset.active;
-      });
+
+        this.querySelector("img").src=this.dataset.active;
+
     });
 
-    homeButton.addEventListener("click", function(event){
-      event.preventDefault();
+});
 
-      homeSound.currentTime = 0;
-      homeSound.play();
+homeButton.addEventListener("click",function(e){
 
-      buttons.forEach(item => {
+    e.preventDefault();
+
+    homeSound.currentTime=0;
+    homeSound.play();
+
+    buttons.forEach(item=>{
+
         item.classList.remove("active");
-        item.querySelector("img").src = item.dataset.normal;
-      });
+
+        item.querySelector("img").src=item.dataset.normal;
+
     });
-  </script>
+
+});
+
+</script>
 
 </body>
 </html>
