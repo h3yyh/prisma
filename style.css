@@ -70,16 +70,24 @@ body{
 
     flex:0 0 auto;
 
-    margin-right:18px;
-
     text-decoration:none;
     cursor:pointer;
 }
 
-.menu-image:last-child{
-    margin-right:0;
+/* distância depois de Personagens */
+.menu-image.personagens{
+    margin-right:18px;
 }
 
+/* distância depois de Campanhas */
+.menu-image.campanhas{
+    margin-right:18px;
+}
+
+/* Sistema não precisa empurrar nada depois dele */
+.menu-image.sistema{
+    margin-right:0;
+}
 /* LARGURA FIXA DE CADA BOTÃO */
 
 .menu-image.personagens{
