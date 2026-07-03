@@ -40,6 +40,9 @@ body{
 
     text-decoration:none;
     cursor:pointer;
+
+    position:relative;
+    top:2px;
 }
 
 .brand-logo img{
