@@ -139,9 +139,9 @@ body{
     background:#000;
 }
 
-/* RESPONSIVO */
+/* RESPONSIVO - SÓ PARA TELAS PEQUENAS DE VERDADE */
 
-@media (max-width:1000px){
+@media (max-width:600px){
 
     .topbar{
         padding:0 18px;
