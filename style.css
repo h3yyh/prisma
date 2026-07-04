@@ -1,3 +1,8 @@
+@font-face{
+    font-family:"Determination";
+    src:url("determination.ttf") format("truetype");
+}
+
 *{
     margin:0;
     padding:0;
@@ -145,4 +150,39 @@ body{
 .hero{
     min-height:calc(100vh - 80px);
     background:#000;
+
+    position:relative;
+}
+
+/* TEXTO DA HOME */
+
+.home-text{
+    position:absolute;
+
+    left:50%;
+    top:45%;
+
+    transform:translate(-50%, -50%);
+
+    text-align:center;
+
+    font-family:"Determination", Arial, Helvetica, sans-serif;
+
+    color:#fff;
+}
+
+.home-text h1{
+    font-size:64px;
+    font-weight:normal;
+
+    margin-bottom:18px;
+
+    letter-spacing:2px;
+}
+
+.home-text p{
+    font-size:32px;
+    font-weight:normal;
+
+    opacity:0.85;
 }
