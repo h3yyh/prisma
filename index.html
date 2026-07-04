@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 
 <body>
@@ -72,10 +72,6 @@
 
 <script>
 
-/* ========================= */
-/* BOTÕES E SONS */
-/* ========================= */
-
 const buttons = document.querySelectorAll(".menu-image");
 
 const selectSound = document.getElementById("selectSound");
@@ -86,29 +82,7 @@ homeSound.volume = 0.25;
 
 const homeButton = document.getElementById("homeButton");
 
-/* ========================= */
-/* TEXTO ANIMADO */
-/* ========================= */
-
 const typeText = document.getElementById("typeText");
-
-/*
-    ONDE VOCÊ MEXE NO TEXTO:
-
-    text: texto que vai aparecer
-    speed: velocidade de cada letra
-           menor = mais rápido
-           maior = mais lento
-
-    effect:
-        "normal" = texto branco normal
-        "cold" = degradê azul/branco
-        "red" = degradê vermelho
-        "violet" = degradê roxo
-
-    pauseBefore: espera antes do trecho começar
-    pauseAfter: espera depois do trecho terminar
-*/
 
 const homeMessage = [
     {
@@ -162,7 +136,7 @@ const homeMessage = [
     {
         text: "Você quer vir comigo?",
         speed: 65,
-        effect: "violet"
+        effect: "normal"
     }
 ];
 
@@ -219,10 +193,6 @@ async function startTypewriter(){
 
 startTypewriter();
 
-/* ========================= */
-/* CLIQUE NAS ABAS */
-/* ========================= */
-
 buttons.forEach(button => {
 
     button.addEventListener("click", function(e){
@@ -247,10 +217,6 @@ buttons.forEach(button => {
     });
 
 });
-
-/* ========================= */
-/* CLIQUE NO PRISMA */
-/* ========================= */
 
 homeButton.addEventListener("click", function(e){
 
