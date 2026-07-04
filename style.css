@@ -159,12 +159,12 @@ body{
 .home-text{
     position:absolute;
 
-    left:50%;
-    top:45%;
+    left:28px;
+    top:24px;
 
-    transform:translate(-50%, -50%);
+    transform:none;
 
-    text-align:center;
+    text-align:left;
 
     font-family:"Determination", Arial, Helvetica, sans-serif;
 
