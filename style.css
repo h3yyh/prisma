@@ -172,8 +172,101 @@ body{
 }
 
 .home-text h1{
-    font-size:16px;
+    font-size:32px;
     font-weight:normal;
 
     letter-spacing:1px;
+    line-height:1.35;
+}
+
+/* ========================= */
+/* ANIMAÇÃO DAS LETRAS */
+/* ========================= */
+
+.typed-letter{
+    display:inline-block;
+
+    opacity:0;
+
+    transform:translateY(-5px);
+
+    animation:letterAppear 0.18s ease forwards;
+}
+
+/*
+    ONDE VOCÊ MEXE NA ANIMAÇÃO:
+
+    translateY(-5px) = a letra começa 5px acima
+    translateY(0) = termina no lugar certo
+
+    opacity:0 = começa invisível
+    opacity:1 = termina visível
+
+    0.18s = duração da animação
+*/
+
+@keyframes letterAppear{
+    from{
+        opacity:0;
+        transform:translateY(-5px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* TEXTO NORMAL */
+
+.typed-letter.normal{
+    color:#fff;
+}
+
+/* DEGRADÊ AZUL / FRIO */
+
+.typed-letter.cold{
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #a7dcff,
+        #4d8dff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+/* DEGRADÊ VERMELHO */
+
+.typed-letter.red{
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #ff4d4d,
+        #8b0000
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+/* DEGRADÊ ROXO */
+
+.typed-letter.violet{
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #c77dff,
+        #6a00ff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
 }
