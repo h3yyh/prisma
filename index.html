@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=11">
 </head>
 
 <body>
@@ -84,6 +84,17 @@ const homeButton = document.getElementById("homeButton");
 
 const typeText = document.getElementById("typeText");
 
+/*
+    initialTypeDelay:
+    tempo antes da PRIMEIRA letra aparecer.
+
+    350 = 0.35 segundos.
+    Aumenta se quiser esperar mais.
+    Diminui se quiser começar mais rápido.
+*/
+
+const initialTypeDelay = 350;
+
 const homeMessage = [
     {
         text: "Tá tão ",
@@ -152,6 +163,10 @@ async function startTypewriter(){
     const currentRun = typingRun;
 
     typeText.innerHTML = "";
+
+    await wait(initialTypeDelay);
+
+    if(currentRun !== typingRun) return;
 
     for(const block of homeMessage){
 
