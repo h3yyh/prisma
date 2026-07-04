@@ -172,17 +172,8 @@ body{
 }
 
 .home-text h1{
-    font-size:64px;
-    font-weight:normal;
-
-    margin-bottom:18px;
-
-    letter-spacing:2px;
-}
-
-.home-text p{
     font-size:32px;
     font-weight:normal;
 
-    opacity:0.85;
+    letter-spacing:1px;
 }
