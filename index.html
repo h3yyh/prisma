@@ -265,10 +265,6 @@ function randomBetween(min, max){
 
 function dropLeaf(){
 
-    if(!bgTree.complete || bgTree.naturalWidth === 0){
-        return;
-    }
-
     const heroRect = hero.getBoundingClientRect();
     const treeRect = bgTree.getBoundingClientRect();
 
@@ -278,68 +274,23 @@ function dropLeaf(){
     leaf.src = "folhaprisma.png?v=1";
     leaf.alt = "";
 
-    /*
-        Tamanho original da árvore usada como base.
-        Isso permite que a hitbox continue certa mesmo com a árvore em 290px.
-    */
-
-    const treeOriginalWidth = 212;
-    const treeOriginalHeight = 182;
-
-    /*
-        Quadrado específico de onde as folhas nascem.
-        Valores em pixels da imagem ORIGINAL da árvore.
-
-        x = esquerda/direita
-        y = cima/baixo
-        width = largura da área
-        height = altura da área
-    */
-
-    const leafSpawnBox = {
-        x: 128,
-        y: 8,
-        width: 38,
-        height: 18
-    };
-
-    const scaleX = treeRect.width / treeOriginalWidth;
-    const scaleY = treeRect.height / treeOriginalHeight;
-
-    const startX = treeRect.left + randomBetween(
-        leafSpawnBox.x * scaleX,
-        (leafSpawnBox.x + leafSpawnBox.width) * scaleX
+    const startX = randomBetween(
+        treeRect.left + treeRect.width * 0.20,
+        treeRect.left + treeRect.width * 0.80
     );
 
-    const startY = treeRect.top + randomBetween(
-        leafSpawnBox.y * scaleY,
-        (leafSpawnBox.y + leafSpawnBox.height) * scaleY
+    const startY = randomBetween(
+        treeRect.top + treeRect.height * 0.05,
+        treeRect.top + treeRect.height * 0.32
     );
 
-    /*
-        A folha aumenta junto com a árvore.
-        Quanto maior a árvore, maior a folha.
-    */
-
-    const leafWidth = treeRect.height * 0.115;
-
-    const fallDistance = randomBetween(
-        treeRect.height * 0.45,
-        treeRect.height * 0.75
-    );
-
-    const drift = randomBetween(
-        treeRect.height * -0.12,
-        treeRect.height * 0.12
-    );
-
+    const fallDistance = randomBetween(120, 210);
+    const drift = randomBetween(-35, 35);
     const rotation = randomBetween(-25, 25);
     const duration = randomBetween(2600, 3600);
 
     leaf.style.left = `${startX - heroRect.left}px`;
     leaf.style.top = `${startY - heroRect.top}px`;
-
-    leaf.style.width = `${leafWidth}px`;
 
     leaf.style.setProperty("--fall-distance", `${fallDistance}px`);
     leaf.style.setProperty("--leaf-drift", `${drift}px`);
