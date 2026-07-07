@@ -165,9 +165,9 @@ body{
     position:absolute;
 
     right:70px;
-    bottom:0px;
+    bottom:0;
 
-    width:290px;
+    width:244px;
     height:auto;
 
     image-rendering:pixelated;
@@ -176,6 +176,59 @@ body{
     pointer-events:none;
 
     z-index:0;
+}
+
+/* CAMADA DAS FOLHAS */
+
+.leaf-layer{
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    pointer-events:none;
+
+    z-index:1;
+}
+
+.falling-leaf{
+    position:absolute;
+
+    width:24px;
+    height:auto;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+
+    animation:leafFall var(--leaf-duration) linear forwards;
+}
+
+@keyframes leafFall{
+    0%{
+        opacity:1;
+        transform:translate(0, 0) rotate(0deg);
+    }
+
+    55%{
+        opacity:1;
+        transform:translate(
+            calc(var(--leaf-drift) * 0.55),
+            calc(var(--fall-distance) * 0.55)
+        ) rotate(calc(var(--leaf-rotation) * 0.55));
+    }
+
+    100%{
+        opacity:0;
+        transform:translate(
+            var(--leaf-drift),
+            var(--fall-distance)
+        ) rotate(var(--leaf-rotation));
+    }
 }
 
 /* TEXTO DA HOME */
@@ -194,7 +247,7 @@ body{
 
     color:#fff;
 
-    z-index:1;
+    z-index:2;
 }
 
 .home-text h1{
