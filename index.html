@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 
 <body>
@@ -77,6 +77,11 @@
 <script>
 
 const buttons = document.querySelectorAll(".menu-image");
+const menu = document.querySelector(".menu");
+
+setTimeout(() => {
+    menu.classList.add("menu-ready");
+}, 1700);
 
 const selectSound = document.getElementById("selectSound");
 const homeSound = document.getElementById("homeSound");
@@ -259,22 +264,7 @@ const hero = document.querySelector(".hero");
 const bgTree = document.getElementById("bgTree");
 const leafLayer = document.getElementById("leafLayer");
 
-/*
-    leafFadeStartFromBottom:
-    quantos pixels acima do chão a folha começa a sumir.
-
-    Como a árvore está em bottom:0,
-    o chão é o final da .hero.
-*/
-
 const leafFadeStartFromBottom = 95;
-
-/*
-    leafEndFromBottom:
-    onde a folha termina a queda.
-    Quanto menor, mais perto do chão.
-*/
-
 const leafEndFromBottom = 20;
 
 function randomBetween(min, max){
@@ -300,11 +290,6 @@ function dropLeaf(){
     leaf.src = "folhaprisma.png?v=1";
     leaf.alt = "";
 
-    /*
-        Área de nascimento:
-        vem da parte de cima da árvore.
-    */
-
     const startX = randomBetween(
         treeRect.left + treeRect.width * 0.20,
         treeRect.left + treeRect.width * 0.78
@@ -317,11 +302,6 @@ function dropLeaf(){
 
     const startXInsideHero = startX - heroRect.left;
     const startYInsideHero = startY - heroRect.top;
-
-    /*
-        Ponto fixo onde a folha começa a sumir.
-        Isso NÃO depende de onde ela começou.
-    */
 
     const fadeStartY = heroRect.height - leafFadeStartFromBottom;
     const endY = heroRect.height - leafEndFromBottom;
