@@ -111,6 +111,9 @@ body{
 
     pointer-events:none;
 
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
     transition:transform 0.12s ease;
 }
 
@@ -152,6 +155,27 @@ body{
     background:#000;
 
     position:relative;
+
+    overflow:hidden;
+}
+
+/* ÁRVORE DO FUNDO */
+
+.bg-tree{
+    position:absolute;
+
+    right:70px;
+    bottom:35px;
+
+    width:244px;
+    height:auto;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+
+    z-index:0;
 }
 
 /* TEXTO DA HOME */
@@ -169,6 +193,8 @@ body{
     font-family:"Determination", Arial, Helvetica, sans-serif;
 
     color:#fff;
+
+    z-index:1;
 }
 
 .home-text h1{
