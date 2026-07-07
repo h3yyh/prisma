@@ -167,8 +167,8 @@ body{
     right:70px;
     bottom:0;
 
-    width:244px;
-    height:auto;
+    height:290px;
+    width:auto;
 
     image-rendering:pixelated;
     image-rendering:crisp-edges;
@@ -197,13 +197,14 @@ body{
 .falling-leaf{
     position:absolute;
 
-    width:24px;
     height:auto;
 
     image-rendering:pixelated;
     image-rendering:crisp-edges;
 
     pointer-events:none;
+
+    transform-origin:center;
 
     animation:leafFall var(--leaf-duration) linear forwards;
 }
