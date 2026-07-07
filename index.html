@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 
 <body>
@@ -259,8 +259,30 @@ const hero = document.querySelector(".hero");
 const bgTree = document.getElementById("bgTree");
 const leafLayer = document.getElementById("leafLayer");
 
+/*
+    leafFadeStartFromBottom:
+    quantos pixels acima do chão a folha começa a sumir.
+
+    Como a árvore está em bottom:0,
+    o chão é o final da .hero.
+*/
+
+const leafFadeStartFromBottom = 95;
+
+/*
+    leafEndFromBottom:
+    onde a folha termina a queda.
+    Quanto menor, mais perto do chão.
+*/
+
+const leafEndFromBottom = 20;
+
 function randomBetween(min, max){
     return Math.random() * (max - min) + min;
+}
+
+function clamp(value, min, max){
+    return Math.max(min, Math.min(max, value));
 }
 
 function dropLeaf(){
@@ -268,40 +290,97 @@ function dropLeaf(){
     const heroRect = hero.getBoundingClientRect();
     const treeRect = bgTree.getBoundingClientRect();
 
+    if(treeRect.width === 0 || treeRect.height === 0){
+        return;
+    }
+
     const leaf = document.createElement("img");
 
     leaf.classList.add("falling-leaf");
     leaf.src = "folhaprisma.png?v=1";
     leaf.alt = "";
 
+    /*
+        Área de nascimento:
+        vem da parte de cima da árvore.
+    */
+
     const startX = randomBetween(
         treeRect.left + treeRect.width * 0.20,
-        treeRect.left + treeRect.width * 0.80
+        treeRect.left + treeRect.width * 0.78
     );
 
     const startY = randomBetween(
-        treeRect.top + treeRect.height * 0.05,
-        treeRect.top + treeRect.height * 0.32
+        treeRect.top + treeRect.height * 0.04,
+        treeRect.top + treeRect.height * 0.30
     );
 
-    const fallDistance = randomBetween(120, 210);
+    const startXInsideHero = startX - heroRect.left;
+    const startYInsideHero = startY - heroRect.top;
+
+    /*
+        Ponto fixo onde a folha começa a sumir.
+        Isso NÃO depende de onde ela começou.
+    */
+
+    const fadeStartY = heroRect.height - leafFadeStartFromBottom;
+    const endY = heroRect.height - leafEndFromBottom;
+
+    const totalFallDistance = Math.max(80, endY - startYInsideHero);
+
+    const fadeStartDistance = fadeStartY - startYInsideHero;
+
+    const fadeStartOffset = clamp(
+        fadeStartDistance / totalFallDistance,
+        0.18,
+        0.92
+    );
+
     const drift = randomBetween(-35, 35);
     const rotation = randomBetween(-25, 25);
     const duration = randomBetween(2600, 3600);
 
-    leaf.style.left = `${startX - heroRect.left}px`;
-    leaf.style.top = `${startY - heroRect.top}px`;
-
-    leaf.style.setProperty("--fall-distance", `${fallDistance}px`);
-    leaf.style.setProperty("--leaf-drift", `${drift}px`);
-    leaf.style.setProperty("--leaf-rotation", `${rotation}deg`);
-    leaf.style.setProperty("--leaf-duration", `${duration}ms`);
+    leaf.style.left = `${startXInsideHero}px`;
+    leaf.style.top = `${startYInsideHero}px`;
 
     leafLayer.appendChild(leaf);
 
-    setTimeout(() => {
+    const animation = leaf.animate(
+        [
+            {
+                opacity: 0,
+                transform: "translate(0px, 0px) rotate(0deg)",
+                offset: 0
+            },
+
+            {
+                opacity: 1,
+                transform: `translate(${drift * 0.08}px, ${totalFallDistance * 0.08}px) rotate(${rotation * 0.08}deg)`,
+                offset: 0.08
+            },
+
+            {
+                opacity: 1,
+                transform: `translate(${drift * fadeStartOffset}px, ${totalFallDistance * fadeStartOffset}px) rotate(${rotation * fadeStartOffset}deg)`,
+                offset: fadeStartOffset
+            },
+
+            {
+                opacity: 0,
+                transform: `translate(${drift}px, ${totalFallDistance}px) rotate(${rotation}deg)`,
+                offset: 1
+            }
+        ],
+        {
+            duration: duration,
+            easing: "linear",
+            fill: "forwards"
+        }
+    );
+
+    animation.onfinish = function(){
         leaf.remove();
-    }, duration + 200);
+    };
 }
 
 setInterval(dropLeaf, 3500);
