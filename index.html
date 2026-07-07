@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 
 <body>
@@ -24,32 +24,32 @@
         <a
             href="#"
             class="menu-image personagens"
-            data-normal="personagens.png"
-            data-active="personagens-active.png">
+            data-normal="personagens.png?v=2"
+            data-active="personagens-active.png?v=2">
 
-            <img src="personagens.png" alt="Personagens">
+            <img src="personagens.png?v=2" alt="Personagens">
 
         </a>
 
-<a
-    href="#"
-    class="menu-image campanhas"
-    data-normal="campanhas.png?v=2"
-    data-active="campanhas-active.png?v=2">
+        <a
+            href="#"
+            class="menu-image campanhas"
+            data-normal="campanhas.png?v=2"
+            data-active="campanhas-active.png?v=2">
 
-    <img src="campanhas.png?v=2" alt="Campanhas">
+            <img src="campanhas.png?v=2" alt="Campanhas">
 
-</a>
+        </a>
         
-<a
-    href="#"
-    class="menu-image sistema"
-    data-normal="sistema.png?v=2"
-    data-active="sistema-active.png?v=2">
+        <a
+            href="#"
+            class="menu-image sistema"
+            data-normal="sistema.png?v=2"
+            data-active="sistema-active.png?v=2">
 
-    <img src="sistema.png?v=2" alt="Sistema">
+            <img src="sistema.png?v=2" alt="Sistema">
 
-</a>
+        </a>
         
     </nav>
 
@@ -60,6 +60,8 @@
 <div class="line"></div>
 
 <main class="hero">
+
+    <img class="bg-tree" src="deltarune-tree.gif?v=1" alt="">
 
     <section class="home-text">
         <h1 id="typeText"></h1>
@@ -83,15 +85,6 @@ homeSound.volume = 0.25;
 const homeButton = document.getElementById("homeButton");
 
 const typeText = document.getElementById("typeText");
-
-/*
-    initialTypeDelay:
-    tempo antes da PRIMEIRA letra aparecer.
-
-    350 = 0.35 segundos.
-    Aumenta se quiser esperar mais.
-    Diminui se quiser começar mais rápido.
-*/
 
 const initialTypeDelay = 350;
 
