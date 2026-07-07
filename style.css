@@ -200,35 +200,12 @@ body{
     width:24px;
     height:auto;
 
+    opacity:0;
+
     image-rendering:pixelated;
     image-rendering:crisp-edges;
 
     pointer-events:none;
-
-    animation:leafFall var(--leaf-duration) linear forwards;
-}
-
-@keyframes leafFall{
-    0%{
-        opacity:1;
-        transform:translate(0, 0) rotate(0deg);
-    }
-
-    55%{
-        opacity:1;
-        transform:translate(
-            calc(var(--leaf-drift) * 0.55),
-            calc(var(--fall-distance) * 0.55)
-        ) rotate(calc(var(--leaf-rotation) * 0.55));
-    }
-
-    100%{
-        opacity:0;
-        transform:translate(
-            var(--leaf-drift),
-            var(--fall-distance)
-        ) rotate(var(--leaf-rotation));
-    }
 }
 
 /* TEXTO DA HOME */
