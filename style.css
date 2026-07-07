@@ -1,1 +1,281 @@
+@font-face{
+    font-family:"Determination";
+    src:url("determination.ttf") format("truetype");
+}
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    font-family:Arial, Helvetica, sans-serif;
+    overflow-x:hidden;
+}
+
+/* TOPO */
+
+.topbar{
+    height:78px;
+    background:#000;
+
+    position:relative;
+
+    padding:0 28px;
+}
+
+/* LOGO PRISMA */
+
+.brand-area{
+    position:absolute;
+    left:28px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.brand-logo{
+    display:inline-flex;
+    align-items:center;
+
+    width:fit-content;
+    height:fit-content;
+
+    text-decoration:none;
+    cursor:pointer;
+
+    position:relative;
+    top:2px;
+}
+
+.brand-logo img{
+    height:42px;
+    display:block;
+
+    pointer-events:none;
+}
+
+/* MENU */
+
+.menu{
+    position:absolute;
+    left:500px;
+    top:50%;
+    transform:translateY(-50%);
+
+    display:flex;
+    align-items:center;
+}
+
+/* BOTÕES DO MENU */
+
+.menu-image{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    height:42px;
+
+    flex:0 0 auto;
+
+    text-decoration:none;
+    cursor:pointer;
+}
+
+/* LARGURA E DISTÂNCIA DE CADA BOTÃO */
+
+.menu-image.personagens{
+    width:205px;
+    margin-right:18px;
+}
+
+.menu-image.campanhas{
+    width:187px;
+    margin-right:14px;
+}
+
+.menu-image.sistema{
+    width:157px;
+    margin-right:0;
+}
+
+/* IMAGENS DOS BOTÕES */
+
+.menu-image img{
+    height:42px;
+    width:auto;
+
+    display:block;
+
+    pointer-events:none;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    transition:transform 0.12s ease;
+}
+
+.menu-image:hover img{
+    transform:translateY(-1px);
+}
+
+/* PERFIL */
+
+.profile{
+    position:absolute;
+    right:28px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        #7c3cff,
+        #00aaff
+    );
+}
+
+/* LINHA */
+
+.line{
+    height:2px;
+    background:#fff;
+}
+
+/* CONTEÚDO */
+
+.hero{
+    min-height:calc(100vh - 80px);
+    background:#000;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+/* ÁRVORE DO FUNDO */
+
+.bg-tree{
+    position:absolute;
+
+    right:70px;
+    bottom:0;
+
+    width:244px;
+    height:auto;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+
+    z-index:0;
+}
+
+/* CAMADA DAS FOLHAS */
+
+.leaf-layer{
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    pointer-events:none;
+
+    z-index:1;
+}
+
+.falling-leaf{
+    position:absolute;
+
+    width:24px;
+    height:auto;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+
+    animation:leafFall var(--leaf-duration) linear forwards;
+}
+
+@keyframes leafFall{
+    0%{
+        opacity:1;
+        transform:translate(0, 0) rotate(0deg);
+    }
+
+    55%{
+        opacity:1;
+        transform:translate(
+            calc(var(--leaf-drift) * 0.55),
+            calc(var(--fall-distance) * 0.55)
+        ) rotate(calc(var(--leaf-rotation) * 0.55));
+    }
+
+    100%{
+        opacity:0;
+        transform:translate(
+            var(--leaf-drift),
+            var(--fall-distance)
+        ) rotate(var(--leaf-rotation));
+    }
+}
+
+/* TEXTO DA HOME */
+
+.home-text{
+    position:absolute;
+
+    left:28px;
+    top:24px;
+
+    transform:none;
+
+    text-align:left;
+
+    font-family:"Determination", Arial, Helvetica, sans-serif;
+
+    color:#fff;
+
+    z-index:2;
+}
+
+.home-text h1{
+    font-size:16px;
+    font-weight:normal;
+
+    letter-spacing:1px;
+    line-height:1.35;
+}
+
+/* LETRAS NORMAIS */
+
+.typed-letter{
+    color:#fff;
+}
+
+/* APENAS O DEGRADÊ AZUL */
+
+.typed-letter.cold{
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #a7dcff,
+        #4d8dff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
