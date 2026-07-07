@@ -6,7 +6,7 @@
     <title>PRISMA</title>
 
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
 </head>
 
 <body>
@@ -61,7 +61,9 @@
 
 <main class="hero">
 
-    <img class="bg-tree" src="deltarune-tree.gif?v=1" alt="">
+    <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
+
+    <div class="leaf-layer" id="leafLayer"></div>
 
     <section class="home-text">
         <h1 id="typeText"></h1>
@@ -250,6 +252,59 @@ homeButton.addEventListener("click", function(e){
     startTypewriter();
 
 });
+
+/* FOLHAS CAINDO */
+
+const hero = document.querySelector(".hero");
+const bgTree = document.getElementById("bgTree");
+const leafLayer = document.getElementById("leafLayer");
+
+function randomBetween(min, max){
+    return Math.random() * (max - min) + min;
+}
+
+function dropLeaf(){
+
+    const heroRect = hero.getBoundingClientRect();
+    const treeRect = bgTree.getBoundingClientRect();
+
+    const leaf = document.createElement("img");
+
+    leaf.classList.add("falling-leaf");
+    leaf.src = "folhaprisma.png?v=1";
+    leaf.alt = "";
+
+    const startX = randomBetween(
+        treeRect.left + treeRect.width * 0.20,
+        treeRect.left + treeRect.width * 0.80
+    );
+
+    const startY = randomBetween(
+        treeRect.top + treeRect.height * 0.05,
+        treeRect.top + treeRect.height * 0.32
+    );
+
+    const fallDistance = randomBetween(120, 210);
+    const drift = randomBetween(-35, 35);
+    const rotation = randomBetween(-25, 25);
+    const duration = randomBetween(2600, 3600);
+
+    leaf.style.left = `${startX - heroRect.left}px`;
+    leaf.style.top = `${startY - heroRect.top}px`;
+
+    leaf.style.setProperty("--fall-distance", `${fallDistance}px`);
+    leaf.style.setProperty("--leaf-drift", `${drift}px`);
+    leaf.style.setProperty("--leaf-rotation", `${rotation}deg`);
+    leaf.style.setProperty("--leaf-duration", `${duration}ms`);
+
+    leafLayer.appendChild(leaf);
+
+    setTimeout(() => {
+        leaf.remove();
+    }, duration + 200);
+}
+
+setInterval(dropLeaf, 3500);
 
 </script>
 
