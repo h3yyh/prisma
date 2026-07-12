@@ -71,10 +71,14 @@ body{
     align-items:center;
 
     pointer-events:none;
+    opacity:0;
+
+    transition:opacity .15s linear;
 }
 
 .menu.menu-ready{
     pointer-events:auto;
+    opacity:1;
 }
 
 /* BOTÕES DO MENU */
@@ -90,53 +94,6 @@ body{
 
     text-decoration:none;
     cursor:pointer;
-
-    opacity:0;
-
-    transform:scale(0.08, 0.45);
-
-    transform-origin:center;
-
-    animation:buttonGloop 0.62s cubic-bezier(0.18, 0.95, 0.25, 1.15) forwards;
-}
-
-.menu-image.personagens{
-    animation-delay:0.82s;
-}
-
-.menu-image.campanhas{
-    animation-delay:0.94s;
-}
-
-.menu-image.sistema{
-    animation-delay:1.06s;
-}
-
-@keyframes buttonGloop{
-    0%{
-        opacity:0;
-        transform:scale(0.08, 0.45);
-    }
-
-    38%{
-        opacity:1;
-        transform:scale(1.08, 0.88);
-    }
-
-    58%{
-        opacity:1;
-        transform:scale(0.95, 1.05);
-    }
-
-    76%{
-        opacity:1;
-        transform:scale(1.025, 0.975);
-    }
-
-    100%{
-        opacity:1;
-        transform:scale(1, 1);
-    }
 }
 
 /* LARGURA E DISTÂNCIA DE CADA BOTÃO */
@@ -205,21 +162,17 @@ body{
     position:relative;
     z-index:4;
 
-    transform:translateY(-80px);
+    transform:translateY(-450px);
 
-    animation:lineDrop 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation:lineDrop 0.9s cubic-bezier(.18,.85,.22,1) forwards;
 }
 
 @keyframes lineDrop{
-    0%{
-        transform:translateY(-80px);
+    from{
+        transform:translateY(-450px);
     }
 
-    72%{
-        transform:translateY(2px);
-    }
-
-    100%{
+    to{
         transform:translateY(0);
     }
 }
