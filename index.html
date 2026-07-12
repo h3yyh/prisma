@@ -79,9 +79,15 @@
 const buttons = document.querySelectorAll(".menu-image");
 const menu = document.querySelector(".menu");
 
-setTimeout(() => {
-    menu.classList.add("menu-ready");
-}, 1700);
+const line = document.querySelector(".line");
+
+line.addEventListener("animationend", () => {
+
+    setTimeout(() => {
+        menu.classList.add("menu-ready");
+    }, 120);
+
+});
 
 const selectSound = document.getElementById("selectSound");
 const homeSound = document.getElementById("homeSound");
