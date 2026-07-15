@@ -82,17 +82,15 @@ const buttons = document.querySelectorAll(".menu-image");
 const menu = document.querySelector(".menu");
 
 const line = document.querySelector(".line");
+const headerWrap=document.querySelector(".header-wrap");
+const brand=document.querySelector(".brand-area");
+const profile=document.querySelector(".profile");
 
-const headerWrap = document.querySelector(".header-wrap");
-
-headerWrap.addEventListener("animationend", (e) => {
-
-    if(e.animationName !== "headerDrop") return;
-
-    setTimeout(() => {
-        menu.classList.add("menu-ready");
-    }, 120);
-
+headerWrap.addEventListener("animationend",(e)=>{
+ if(e.animationName!=="headerDrop")return;
+ brand.classList.add("show");
+ profile.classList.add("show");
+ setTimeout(()=>menu.classList.add("menu-ready"),120);
 });
 
 const selectSound = document.getElementById("selectSound");
