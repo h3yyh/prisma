@@ -1,381 +1,722 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>PRISMA</title>
 
-    <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=15">
+    <link
+        rel="icon"
+        type="image/png"
+        href="PRISMA.png?v=1"
+    >
+
+    <!-- Aumentei a versão para evitar o cache do GitHub Pages -->
+    <link
+        rel="stylesheet"
+        href="style.css?v=16"
+    >
 </head>
 
 <body>
 
-<div class="header-wrap">
-<header class="topbar">
+    <div class="header-wrap" id="headerWrap">
 
-    <div class="brand-area">
-        <a href="#" class="brand-logo" id="homeButton">
-            <img src="prisma-logo.png" alt="PRISMA">
-        </a>
+        <header class="topbar">
+
+            <div class="brand-area">
+
+                <a
+                    href="#"
+                    class="brand-logo"
+                    id="homeButton"
+                    aria-label="Voltar para o início"
+                >
+
+                    <img
+                        src="prisma-logo.png"
+                        alt="PRISMA"
+                    >
+
+                </a>
+
+            </div>
+
+            <nav class="menu" aria-label="Menu principal">
+
+                <a
+                    href="#"
+                    class="menu-image personagens"
+                    data-normal="personagens.png?v=2"
+                    data-active="personagens-active.png?v=2"
+                >
+
+                    <img
+                        src="personagens.png?v=2"
+                        alt="Personagens"
+                    >
+
+                </a>
+
+                <a
+                    href="#"
+                    class="menu-image campanhas"
+                    data-normal="campanhas.png?v=2"
+                    data-active="campanhas-active.png?v=2"
+                >
+
+                    <img
+                        src="campanhas.png?v=2"
+                        alt="Campanhas"
+                    >
+
+                </a>
+
+                <a
+                    href="#"
+                    class="menu-image sistema"
+                    data-normal="sistema.png?v=2"
+                    data-active="sistema-active.png?v=2"
+                >
+
+                    <img
+                        src="sistema.png?v=2"
+                        alt="Sistema"
+                    >
+
+                </a>
+
+            </nav>
+
+            <div class="profile"></div>
+
+        </header>
+
+        <div class="line"></div>
+
     </div>
 
-    <nav class="menu">
+    <main class="hero">
 
-        <a
-            href="#"
-            class="menu-image personagens"
-            data-normal="personagens.png?v=2"
-            data-active="personagens-active.png?v=2">
+        <img
+            class="bg-tree"
+            id="bgTree"
+            src="deltarune-tree.gif?v=1"
+            alt=""
+        >
 
-            <img src="personagens.png?v=2" alt="Personagens">
+        <div
+            class="leaf-layer"
+            id="leafLayer"
+        ></div>
 
-        </a>
+        <section class="home-text">
 
-        <a
-            href="#"
-            class="menu-image campanhas"
-            data-normal="campanhas.png?v=2"
-            data-active="campanhas-active.png?v=2">
+            <h1 id="typeText"></h1>
 
-            <img src="campanhas.png?v=2" alt="Campanhas">
+        </section>
 
-        </a>
-        
-        <a
-            href="#"
-            class="menu-image sistema"
-            data-normal="sistema.png?v=2"
-            data-active="sistema-active.png?v=2">
+    </main>
 
-            <img src="sistema.png?v=2" alt="Sistema">
+    <audio
+        id="selectSound"
+        src="sndselectundertale.mp3"
+        preload="auto"
+    ></audio>
 
-        </a>
-        
-    </nav>
+    <audio
+        id="homeSound"
+        src="snd_saveprisma.mp3"
+        preload="auto"
+    ></audio>
 
-    <div class="profile"></div>
+    <script>
 
-</header>
+        /* =========================================================
+           ELEMENTOS PRINCIPAIS
+        ========================================================= */
 
-<div class="line"></div>
-</div>
+        const buttons = document.querySelectorAll(".menu-image");
 
-<main class="hero">
+        const menu = document.querySelector(".menu");
+        const headerWrap = document.getElementById("headerWrap");
 
-    <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
+        const brand = document.querySelector(".brand-area");
+        const profile = document.querySelector(".profile");
 
-    <div class="leaf-layer" id="leafLayer"></div>
+        const homeButton = document.getElementById("homeButton");
+        const typeText = document.getElementById("typeText");
 
-    <section class="home-text">
-        <h1 id="typeText"></h1>
-    </section>
 
-</main>
+        /* =========================================================
+           SONS
+        ========================================================= */
 
-<audio id="selectSound" src="sndselectundertale.mp3"></audio>
-<audio id="homeSound" src="snd_saveprisma.mp3"></audio>
+        const selectSound = document.getElementById("selectSound");
+        const homeSound = document.getElementById("homeSound");
 
-<script>
+        selectSound.volume = 0.25;
+        homeSound.volume = 0.25;
 
-const buttons = document.querySelectorAll(".menu-image");
-const menu = document.querySelector(".menu");
 
-const line = document.querySelector(".line");
-const headerWrap=document.querySelector(".header-wrap");
-const brand=document.querySelector(".brand-area");
-const profile=document.querySelector(".profile");
+        function playSound(sound) {
 
-headerWrap.addEventListener("animationend",(e)=>{
- if(e.animationName!=="headerDrop")return;
- brand.classList.add("show");
- profile.classList.add("show");
- setTimeout(()=>menu.classList.add("menu-ready"),120);
-});
+            sound.currentTime = 0;
 
-const selectSound = document.getElementById("selectSound");
-const homeSound = document.getElementById("homeSound");
+            const playPromise = sound.play();
 
-selectSound.volume = 0.25;
-homeSound.volume = 0.25;
+            if (playPromise !== undefined) {
 
-const homeButton = document.getElementById("homeButton");
+                playPromise.catch(() => {
+                    /*
+                    O navegador pode impedir o áudio em algumas situações.
+                    Nesse caso, simplesmente continuamos sem interromper o site.
+                    */
+                });
 
-const typeText = document.getElementById("typeText");
-
-const initialTypeDelay = 350;
-
-const homeMessage = [
-    {
-        text: "Tá tão...",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: " fri",
-        speed: 120,
-        effect: "cold",
-    },
-
-    {
-        text: "o",
-        speed: 90,
-        effect: "cold",
-    },
-    
-    {
-        text: ".\n\n",
-        speed: 70,
-        effect: "normal",
-        pauseAfter: 500
-    },
-
-    {
-        text: "...\n\n",
-        speed: 330,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: "Já já vai começar de novo.\n\n",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 700
-    },
-
-    {
-        text: "...\n\n",
-        speed: 330,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: "Eu vou pegar um casaco.\n\n",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 400
-    },
-
-    {
-        text: "Você quer vir comigo?",
-        speed: 35,
-        effect: "normal"
-    }
-];
-
-let typingRun = 0;
-
-function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function startTypewriter(){
-
-    typingRun++;
-    const currentRun = typingRun;
-
-    typeText.innerHTML = "";
-
-    await wait(initialTypeDelay);
-
-    if(currentRun !== typingRun) return;
-
-    for(const block of homeMessage){
-
-        if(currentRun !== typingRun) return;
-
-        if(block.pauseBefore){
-            await wait(block.pauseBefore);
-        }
-
-        for(const char of block.text){
-
-            if(currentRun !== typingRun) return;
-
-            if(char === "\n"){
-                typeText.appendChild(document.createElement("br"));
-            }else{
-                const letter = document.createElement("span");
-
-                letter.classList.add("typed-letter");
-                letter.classList.add(block.effect || "normal");
-
-                if(char === " "){
-                    letter.innerHTML = "&nbsp;";
-                }else{
-                    letter.textContent = char;
-                }
-
-                typeText.appendChild(letter);
             }
 
-            await wait(block.speed || 45);
         }
 
-        if(block.pauseAfter){
-            await wait(block.pauseAfter);
+
+        /* =========================================================
+           ENTRADA DO CABEÇALHO
+        ========================================================= */
+
+        /*
+        Tempo entre o aparecimento dos botões e o começo
+        da preparação do texto.
+        */
+        const textDelayAfterMenu = 320;
+
+        let headerContentWasRevealed = false;
+
+
+        function revealHeaderContent() {
+
+            /*
+            Impede que a função seja executada duas vezes caso
+            o fallback e o animationend ocorram juntos.
+            */
+            if (headerContentWasRevealed) {
+                return;
+            }
+
+            headerContentWasRevealed = true;
+
+            /*
+            Todos recebem suas classes no mesmo instante.
+
+            Logo, menu e perfil aparecem simultaneamente.
+            Como os três botões estão dentro de .menu,
+            os três também surgem juntos.
+            */
+            brand.classList.add("show");
+            menu.classList.add("menu-ready");
+            profile.classList.add("show");
+
+            /*
+            O texto só começa depois que os elementos superiores
+            já apareceram.
+            */
+            setTimeout(() => {
+
+                startTypewriter();
+
+            }, textDelayAfterMenu);
+
         }
-    }
-}
 
-startTypewriter();
 
-buttons.forEach(button => {
+        headerWrap.addEventListener(
+            "animationend",
+            function (event) {
 
-    button.addEventListener("click", function(e){
+                /*
+                Ignora animações de elementos internos.
+                Queremos apenas o fim da animação headerDrop.
+                */
+                if (event.target !== headerWrap) {
+                    return;
+                }
 
-        e.preventDefault();
+                if (event.animationName !== "headerDrop") {
+                    return;
+                }
 
-        selectSound.currentTime = 0;
-        selectSound.play();
+                revealHeaderContent();
 
-        buttons.forEach(item => {
+            },
+            {
+                once: true
+            }
+        );
 
-            item.classList.remove("active");
 
-            item.querySelector("img").src = item.dataset.normal;
+        /*
+        Segurança para o caso de algum navegador não disparar
+        o evento animationend corretamente.
+        */
+        setTimeout(() => {
+
+            revealHeaderContent();
+
+        }, 1300);
+
+
+        /* =========================================================
+           MÁQUINA DE ESCREVER
+        ========================================================= */
+
+        /*
+        Pequena espera interna antes da primeira letra.
+
+        Ela acontece depois do textDelayAfterMenu.
+        */
+        const initialTypeDelay = 180;
+
+
+        const homeMessage = [
+
+            {
+                text: "Tá tão...",
+                speed: 35,
+                effect: "normal",
+                pauseAfter: 1000
+            },
+
+            {
+                text: " fri",
+                speed: 120,
+                effect: "cold"
+            },
+
+            {
+                text: "o",
+                speed: 90,
+                effect: "cold"
+            },
+
+            {
+                text: ".\n\n",
+                speed: 70,
+                effect: "normal",
+                pauseAfter: 500
+            },
+
+            {
+                text: "...\n\n",
+                speed: 330,
+                effect: "normal",
+                pauseAfter: 1000
+            },
+
+            {
+                text: "Já já vai começar de novo.\n\n",
+                speed: 35,
+                effect: "normal",
+                pauseAfter: 700
+            },
+
+            {
+                text: "...\n\n",
+                speed: 330,
+                effect: "normal",
+                pauseAfter: 1000
+            },
+
+            {
+                text: "Eu vou pegar um casaco.\n\n",
+                speed: 35,
+                effect: "normal",
+                pauseAfter: 400
+            },
+
+            {
+                text: "Você quer vir comigo?",
+                speed: 35,
+                effect: "normal"
+            }
+
+        ];
+
+
+        let typingRun = 0;
+
+
+        function wait(milliseconds) {
+
+            return new Promise(resolve => {
+
+                setTimeout(resolve, milliseconds);
+
+            });
+
+        }
+
+
+        async function startTypewriter() {
+
+            /*
+            Cada execução recebe um número.
+
+            Caso a Home seja reiniciada, a execução anterior
+            percebe que seu número ficou desatualizado e para.
+            */
+            typingRun++;
+
+            const currentRun = typingRun;
+
+            typeText.innerHTML = "";
+
+            await wait(initialTypeDelay);
+
+            if (currentRun !== typingRun) {
+                return;
+            }
+
+
+            for (const block of homeMessage) {
+
+                if (currentRun !== typingRun) {
+                    return;
+                }
+
+
+                if (block.pauseBefore) {
+
+                    await wait(block.pauseBefore);
+
+                }
+
+
+                for (const char of block.text) {
+
+                    if (currentRun !== typingRun) {
+                        return;
+                    }
+
+
+                    if (char === "\n") {
+
+                        typeText.appendChild(
+                            document.createElement("br")
+                        );
+
+                    } else {
+
+                        const letter = document.createElement("span");
+
+                        letter.classList.add("typed-letter");
+
+                        letter.classList.add(
+                            block.effect || "normal"
+                        );
+
+
+                        if (char === " ") {
+
+                            letter.innerHTML = "&nbsp;";
+
+                        } else {
+
+                            letter.textContent = char;
+
+                        }
+
+
+                        typeText.appendChild(letter);
+
+                    }
+
+
+                    await wait(block.speed || 45);
+
+                }
+
+
+                if (block.pauseAfter) {
+
+                    await wait(block.pauseAfter);
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        Não existe mais startTypewriter() aqui.
+
+        O texto agora é iniciado por revealHeaderContent(),
+        depois do aparecimento dos botões.
+        */
+
+
+        /* =========================================================
+           BOTÕES DO MENU
+        ========================================================= */
+
+        buttons.forEach(button => {
+
+            button.addEventListener("click", function (event) {
+
+                event.preventDefault();
+
+                playSound(selectSound);
+
+
+                buttons.forEach(item => {
+
+                    item.classList.remove("active");
+
+                    const image = item.querySelector("img");
+
+                    image.src = item.dataset.normal;
+
+                });
+
+
+                this.classList.add("active");
+
+                const selectedImage = this.querySelector("img");
+
+                selectedImage.src = this.dataset.active;
+
+            });
 
         });
 
-        this.classList.add("active");
 
-        this.querySelector("img").src = this.dataset.active;
+        /* =========================================================
+           BOTÃO DA HOME
+        ========================================================= */
 
-    });
+        homeButton.addEventListener("click", function (event) {
 
-});
+            event.preventDefault();
 
-homeButton.addEventListener("click", function(e){
+            playSound(homeSound);
 
-    e.preventDefault();
 
-    homeSound.currentTime = 0;
-    homeSound.play();
+            buttons.forEach(item => {
 
-    buttons.forEach(item => {
+                item.classList.remove("active");
 
-        item.classList.remove("active");
+                const image = item.querySelector("img");
 
-        item.querySelector("img").src = item.dataset.normal;
+                image.src = item.dataset.normal;
 
-    });
+            });
 
-    startTypewriter();
 
-});
+            startTypewriter();
 
-/* FOLHAS CAINDO */
+        });
 
-const hero = document.querySelector(".hero");
-const bgTree = document.getElementById("bgTree");
-const leafLayer = document.getElementById("leafLayer");
 
-const leafFadeStartFromBottom = 95;
-const leafEndFromBottom = 20;
+        /* =========================================================
+           FOLHAS CAINDO
+        ========================================================= */
 
-function randomBetween(min, max){
-    return Math.random() * (max - min) + min;
-}
+        const hero = document.querySelector(".hero");
 
-function clamp(value, min, max){
-    return Math.max(min, Math.min(max, value));
-}
+        const bgTree = document.getElementById("bgTree");
+        const leafLayer = document.getElementById("leafLayer");
 
-function dropLeaf(){
 
-    const heroRect = hero.getBoundingClientRect();
-    const treeRect = bgTree.getBoundingClientRect();
+        const leafFadeStartFromBottom = 95;
+        const leafEndFromBottom = 20;
 
-    if(treeRect.width === 0 || treeRect.height === 0){
-        return;
-    }
 
-    const leaf = document.createElement("img");
+        function randomBetween(minimum, maximum) {
 
-    leaf.classList.add("falling-leaf");
-    leaf.src = "folhaprisma.png?v=1";
-    leaf.alt = "";
+            return Math.random() * (maximum - minimum) + minimum;
 
-    const startX = randomBetween(
-        treeRect.left + treeRect.width * 0.20,
-        treeRect.left + treeRect.width * 0.78
-    );
-
-    const startY = randomBetween(
-        treeRect.top + treeRect.height * 0.04,
-        treeRect.top + treeRect.height * 0.30
-    );
-
-    const startXInsideHero = startX - heroRect.left;
-    const startYInsideHero = startY - heroRect.top;
-
-    const fadeStartY = heroRect.height - leafFadeStartFromBottom;
-    const endY = heroRect.height - leafEndFromBottom;
-
-    const totalFallDistance = Math.max(80, endY - startYInsideHero);
-
-    const fadeStartDistance = fadeStartY - startYInsideHero;
-
-    const fadeStartOffset = clamp(
-        fadeStartDistance / totalFallDistance,
-        0.18,
-        0.92
-    );
-
-    const drift = randomBetween(-35, 35);
-    const rotation = randomBetween(-25, 25);
-    const duration = randomBetween(2600, 3600);
-
-    leaf.style.left = `${startXInsideHero}px`;
-    leaf.style.top = `${startYInsideHero}px`;
-
-    leafLayer.appendChild(leaf);
-
-    const animation = leaf.animate(
-        [
-            {
-                opacity: 0,
-                transform: "translate(0px, 0px) rotate(0deg)",
-                offset: 0
-            },
-
-            {
-                opacity: 1,
-                transform: `translate(${drift * 0.08}px, ${totalFallDistance * 0.08}px) rotate(${rotation * 0.08}deg)`,
-                offset: 0.08
-            },
-
-            {
-                opacity: 1,
-                transform: `translate(${drift * fadeStartOffset}px, ${totalFallDistance * fadeStartOffset}px) rotate(${rotation * fadeStartOffset}deg)`,
-                offset: fadeStartOffset
-            },
-
-            {
-                opacity: 0,
-                transform: `translate(${drift}px, ${totalFallDistance}px) rotate(${rotation}deg)`,
-                offset: 1
-            }
-        ],
-        {
-            duration: duration,
-            easing: "linear",
-            fill: "forwards"
         }
-    );
 
-    animation.onfinish = function(){
-        leaf.remove();
-    };
-}
 
-setInterval(dropLeaf, 3500);
+        function clamp(value, minimum, maximum) {
 
-</script>
+            return Math.max(
+                minimum,
+                Math.min(maximum, value)
+            );
+
+        }
+
+
+        function dropLeaf() {
+
+            const heroRect = hero.getBoundingClientRect();
+            const treeRect = bgTree.getBoundingClientRect();
+
+
+            if (treeRect.width === 0 || treeRect.height === 0) {
+
+                return;
+
+            }
+
+
+            const leaf = document.createElement("img");
+
+            leaf.classList.add("falling-leaf");
+
+            leaf.src = "folhaprisma.png?v=1";
+            leaf.alt = "";
+
+
+            const startX = randomBetween(
+
+                treeRect.left + treeRect.width * 0.20,
+
+                treeRect.left + treeRect.width * 0.78
+
+            );
+
+
+            const startY = randomBetween(
+
+                treeRect.top + treeRect.height * 0.04,
+
+                treeRect.top + treeRect.height * 0.30
+
+            );
+
+
+            const startXInsideHero = startX - heroRect.left;
+            const startYInsideHero = startY - heroRect.top;
+
+
+            const fadeStartY =
+                heroRect.height - leafFadeStartFromBottom;
+
+            const endY =
+                heroRect.height - leafEndFromBottom;
+
+
+            const totalFallDistance = Math.max(
+
+                80,
+
+                endY - startYInsideHero
+
+            );
+
+
+            const fadeStartDistance =
+                fadeStartY - startYInsideHero;
+
+
+            const fadeStartOffset = clamp(
+
+                fadeStartDistance / totalFallDistance,
+
+                0.18,
+
+                0.92
+
+            );
+
+
+            const drift = randomBetween(-35, 35);
+            const rotation = randomBetween(-25, 25);
+            const duration = randomBetween(2600, 3600);
+
+
+            leaf.style.left = `${startXInsideHero}px`;
+            leaf.style.top = `${startYInsideHero}px`;
+
+
+            leafLayer.appendChild(leaf);
+
+
+            const animation = leaf.animate(
+
+                [
+
+                    {
+                        opacity: 0,
+
+                        transform:
+                            "translate(0px, 0px) rotate(0deg)",
+
+                        offset: 0
+                    },
+
+                    {
+                        opacity: 1,
+
+                        transform:
+                            `translate(
+                                ${drift * 0.08}px,
+                                ${totalFallDistance * 0.08}px
+                            )
+                            rotate(${rotation * 0.08}deg)`,
+
+                        offset: 0.08
+                    },
+
+                    {
+                        opacity: 1,
+
+                        transform:
+                            `translate(
+                                ${drift * fadeStartOffset}px,
+                                ${totalFallDistance * fadeStartOffset}px
+                            )
+                            rotate(
+                                ${rotation * fadeStartOffset}deg
+                            )`,
+
+                        offset: fadeStartOffset
+                    },
+
+                    {
+                        opacity: 0,
+
+                        transform:
+                            `translate(
+                                ${drift}px,
+                                ${totalFallDistance}px
+                            )
+                            rotate(${rotation}deg)`,
+
+                        offset: 1
+                    }
+
+                ],
+
+                {
+                    duration: duration,
+                    easing: "linear",
+                    fill: "forwards"
+                }
+
+            );
+
+
+            animation.onfinish = function () {
+
+                leaf.remove();
+
+            };
+
+        }
+
+
+        setInterval(dropLeaf, 3500);
+
+    </script>
 
 </body>
+
 </html>
