@@ -1,722 +1,255 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRISMA</title>
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="PRISMA.png?v=1"
-    >
-
-    <!-- Aumentei a versão para evitar o cache do GitHub Pages -->
-    <link
-        rel="stylesheet"
-        href="style.css?v=16"
-    >
+    <link rel="icon" type="image/png" href="PRISMA.png?v=1">
+    <link rel="stylesheet" href="style.css?v=16">
 </head>
-
 <body>
-
     <div class="header-wrap" id="headerWrap">
-
         <header class="topbar">
-
             <div class="brand-area">
-
-                <a
-                    href="#"
-                    class="brand-logo"
-                    id="homeButton"
-                    aria-label="Voltar para o início"
-                >
-
-                    <img
-                        src="prisma-logo.png"
-                        alt="PRISMA"
-                    >
-
+                <a href="#" class="brand-logo" id="homeButton" aria-label="Voltar ao início">
+                    <img src="prisma-logo.png" alt="PRISMA">
                 </a>
-
             </div>
 
             <nav class="menu" aria-label="Menu principal">
-
-                <a
-                    href="#"
-                    class="menu-image personagens"
-                    data-normal="personagens.png?v=2"
-                    data-active="personagens-active.png?v=2"
-                >
-
-                    <img
-                        src="personagens.png?v=2"
-                        alt="Personagens"
-                    >
-
+                <a href="#" class="menu-image personagens"
+                   data-normal="personagens.png?v=2"
+                   data-active="personagens-active.png?v=2">
+                    <img src="personagens.png?v=2" alt="Personagens">
                 </a>
 
-                <a
-                    href="#"
-                    class="menu-image campanhas"
-                    data-normal="campanhas.png?v=2"
-                    data-active="campanhas-active.png?v=2"
-                >
-
-                    <img
-                        src="campanhas.png?v=2"
-                        alt="Campanhas"
-                    >
-
+                <a href="#" class="menu-image campanhas"
+                   data-normal="campanhas.png?v=2"
+                   data-active="campanhas-active.png?v=2">
+                    <img src="campanhas.png?v=2" alt="Campanhas">
                 </a>
 
-                <a
-                    href="#"
-                    class="menu-image sistema"
-                    data-normal="sistema.png?v=2"
-                    data-active="sistema-active.png?v=2"
-                >
-
-                    <img
-                        src="sistema.png?v=2"
-                        alt="Sistema"
-                    >
-
+                <a href="#" class="menu-image sistema"
+                   data-normal="sistema.png?v=2"
+                   data-active="sistema-active.png?v=2">
+                    <img src="sistema.png?v=2" alt="Sistema">
                 </a>
-
             </nav>
 
             <div class="profile"></div>
-
         </header>
 
         <div class="line"></div>
-
     </div>
 
     <main class="hero">
-
-        <img
-            class="bg-tree"
-            id="bgTree"
-            src="deltarune-tree.gif?v=1"
-            alt=""
-        >
-
-        <div
-            class="leaf-layer"
-            id="leafLayer"
-        ></div>
+        <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
+        <div class="leaf-layer" id="leafLayer"></div>
 
         <section class="home-text">
-
             <h1 id="typeText"></h1>
-
         </section>
-
     </main>
 
-    <audio
-        id="selectSound"
-        src="sndselectundertale.mp3"
-        preload="auto"
-    ></audio>
-
-    <audio
-        id="homeSound"
-        src="snd_saveprisma.mp3"
-        preload="auto"
-    ></audio>
+    <audio id="selectSound" src="sndselectundertale.mp3"></audio>
+    <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
 
     <script>
-
-        /* =========================================================
-           ELEMENTOS PRINCIPAIS
-        ========================================================= */
-
-        const buttons = document.querySelectorAll(".menu-image");
-
-        const menu = document.querySelector(".menu");
         const headerWrap = document.getElementById("headerWrap");
-
-        const brand = document.querySelector(".brand-area");
-        const profile = document.querySelector(".profile");
-
+        const buttons = document.querySelectorAll(".menu-image");
         const homeButton = document.getElementById("homeButton");
         const typeText = document.getElementById("typeText");
-
-
-        /* =========================================================
-           SONS
-        ========================================================= */
-
         const selectSound = document.getElementById("selectSound");
         const homeSound = document.getElementById("homeSound");
 
         selectSound.volume = 0.25;
         homeSound.volume = 0.25;
 
-
-        function playSound(sound) {
-
-            sound.currentTime = 0;
-
-            const playPromise = sound.play();
-
-            if (playPromise !== undefined) {
-
-                playPromise.catch(() => {
-                    /*
-                    O navegador pode impedir o áudio em algumas situações.
-                    Nesse caso, simplesmente continuamos sem interromper o site.
-                    */
-                });
-
-            }
-
-        }
-
-
-        /* =========================================================
-           ENTRADA DO CABEÇALHO
-        ========================================================= */
-
-        /*
-        Tempo entre o aparecimento dos botões e o começo
-        da preparação do texto.
-        */
-        const textDelayAfterMenu = 320;
-
-        let headerContentWasRevealed = false;
-
-
-        function revealHeaderContent() {
-
-            /*
-            Impede que a função seja executada duas vezes caso
-            o fallback e o animationend ocorram juntos.
-            */
-            if (headerContentWasRevealed) {
-                return;
-            }
-
-            headerContentWasRevealed = true;
-
-            /*
-            Todos recebem suas classes no mesmo instante.
-
-            Logo, menu e perfil aparecem simultaneamente.
-            Como os três botões estão dentro de .menu,
-            os três também surgem juntos.
-            */
-            brand.classList.add("show");
-            menu.classList.add("menu-ready");
-            profile.classList.add("show");
-
-            /*
-            O texto só começa depois que os elementos superiores
-            já apareceram.
-            */
-            setTimeout(() => {
-
-                startTypewriter();
-
-            }, textDelayAfterMenu);
-
-        }
-
-
-        headerWrap.addEventListener(
-            "animationend",
-            function (event) {
-
-                /*
-                Ignora animações de elementos internos.
-                Queremos apenas o fim da animação headerDrop.
-                */
-                if (event.target !== headerWrap) {
-                    return;
-                }
-
-                if (event.animationName !== "headerDrop") {
-                    return;
-                }
-
-                revealHeaderContent();
-
-            },
-            {
-                once: true
-            }
-        );
-
-
-        /*
-        Segurança para o caso de algum navegador não disparar
-        o evento animationend corretamente.
-        */
-        setTimeout(() => {
-
-            revealHeaderContent();
-
-        }, 1300);
-
-
-        /* =========================================================
-           MÁQUINA DE ESCREVER
-        ========================================================= */
-
-        /*
-        Pequena espera interna antes da primeira letra.
-
-        Ela acontece depois do textDelayAfterMenu.
-        */
-        const initialTypeDelay = 180;
-
-
         const homeMessage = [
-
-            {
-                text: "Tá tão...",
-                speed: 35,
-                effect: "normal",
-                pauseAfter: 1000
-            },
-
-            {
-                text: " fri",
-                speed: 120,
-                effect: "cold"
-            },
-
-            {
-                text: "o",
-                speed: 90,
-                effect: "cold"
-            },
-
-            {
-                text: ".\n\n",
-                speed: 70,
-                effect: "normal",
-                pauseAfter: 500
-            },
-
-            {
-                text: "...\n\n",
-                speed: 330,
-                effect: "normal",
-                pauseAfter: 1000
-            },
-
-            {
-                text: "Já já vai começar de novo.\n\n",
-                speed: 35,
-                effect: "normal",
-                pauseAfter: 700
-            },
-
-            {
-                text: "...\n\n",
-                speed: 330,
-                effect: "normal",
-                pauseAfter: 1000
-            },
-
-            {
-                text: "Eu vou pegar um casaco.\n\n",
-                speed: 35,
-                effect: "normal",
-                pauseAfter: 400
-            },
-
-            {
-                text: "Você quer vir comigo?",
-                speed: 35,
-                effect: "normal"
-            }
-
+            { text: "Tá tão...", speed: 35, pauseAfter: 1000 },
+            { text: " fri", speed: 120, effect: "cold" },
+            { text: "o", speed: 90, effect: "cold" },
+            { text: ".\n\n", speed: 70, pauseAfter: 500 },
+            { text: "...\n\n", speed: 330, pauseAfter: 1000 },
+            { text: "Já já vai começar de novo.\n\n", speed: 35, pauseAfter: 700 },
+            { text: "...\n\n", speed: 330, pauseAfter: 1000 },
+            { text: "Eu vou pegar um casaco.\n\n", speed: 35, pauseAfter: 400 },
+            { text: "Você quer vir comigo?", speed: 35 }
         ];
-
 
         let typingRun = 0;
 
-
-        function wait(milliseconds) {
-
-            return new Promise(resolve => {
-
-                setTimeout(resolve, milliseconds);
-
-            });
-
-        }
-
+        const wait = ms =>
+            new Promise(resolve => setTimeout(resolve, ms));
 
         async function startTypewriter() {
-
-            /*
-            Cada execução recebe um número.
-
-            Caso a Home seja reiniciada, a execução anterior
-            percebe que seu número ficou desatualizado e para.
-            */
-            typingRun++;
-
-            const currentRun = typingRun;
+            const currentRun = ++typingRun;
 
             typeText.innerHTML = "";
 
-            await wait(initialTypeDelay);
-
-            if (currentRun !== typingRun) {
-                return;
-            }
-
+            await wait(180);
 
             for (const block of homeMessage) {
-
-                if (currentRun !== typingRun) {
-                    return;
-                }
-
-
-                if (block.pauseBefore) {
-
-                    await wait(block.pauseBefore);
-
-                }
-
+                if (currentRun !== typingRun) return;
 
                 for (const char of block.text) {
-
-                    if (currentRun !== typingRun) {
-                        return;
-                    }
-
+                    if (currentRun !== typingRun) return;
 
                     if (char === "\n") {
-
-                        typeText.appendChild(
-                            document.createElement("br")
-                        );
-
+                        typeText.appendChild(document.createElement("br"));
                     } else {
-
                         const letter = document.createElement("span");
 
-                        letter.classList.add("typed-letter");
+                        letter.className =
+                            `typed-letter ${block.effect || "normal"}`;
 
-                        letter.classList.add(
-                            block.effect || "normal"
-                        );
-
-
-                        if (char === " ") {
-
-                            letter.innerHTML = "&nbsp;";
-
-                        } else {
-
-                            letter.textContent = char;
-
-                        }
-
+                        letter.innerHTML =
+                            char === " " ? "&nbsp;" : char;
 
                         typeText.appendChild(letter);
-
                     }
 
-
                     await wait(block.speed || 45);
-
                 }
-
 
                 if (block.pauseAfter) {
-
                     await wait(block.pauseAfter);
-
                 }
-
             }
-
         }
 
+        function resetButtons() {
+            buttons.forEach(button => {
+                button.classList.remove("active");
+                button.querySelector("img").src =
+                    button.dataset.normal;
+            });
+        }
 
-        /*
-        Não existe mais startTypewriter() aqui.
+        function play(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
 
-        O texto agora é iniciado por revealHeaderContent(),
-        depois do aparecimento dos botões.
-        */
+        headerWrap.addEventListener("animationend", event => {
+            if (event.animationName !== "headerDrop") return;
 
+            headerWrap.classList.add("ready");
 
-        /* =========================================================
-           BOTÕES DO MENU
-        ========================================================= */
+            setTimeout(startTypewriter, 350);
+        });
 
         buttons.forEach(button => {
-
-            button.addEventListener("click", function (event) {
-
+            button.addEventListener("click", event => {
                 event.preventDefault();
 
-                playSound(selectSound);
+                play(selectSound);
+                resetButtons();
 
-
-                buttons.forEach(item => {
-
-                    item.classList.remove("active");
-
-                    const image = item.querySelector("img");
-
-                    image.src = item.dataset.normal;
-
-                });
-
-
-                this.classList.add("active");
-
-                const selectedImage = this.querySelector("img");
-
-                selectedImage.src = this.dataset.active;
-
+                button.classList.add("active");
+                button.querySelector("img").src =
+                    button.dataset.active;
             });
-
         });
 
-
-        /* =========================================================
-           BOTÃO DA HOME
-        ========================================================= */
-
-        homeButton.addEventListener("click", function (event) {
-
+        homeButton.addEventListener("click", event => {
             event.preventDefault();
 
-            playSound(homeSound);
-
-
-            buttons.forEach(item => {
-
-                item.classList.remove("active");
-
-                const image = item.querySelector("img");
-
-                image.src = item.dataset.normal;
-
-            });
-
-
+            play(homeSound);
+            resetButtons();
             startTypewriter();
-
         });
 
-
-        /* =========================================================
-           FOLHAS CAINDO
-        ========================================================= */
-
         const hero = document.querySelector(".hero");
-
         const bgTree = document.getElementById("bgTree");
         const leafLayer = document.getElementById("leafLayer");
 
+        const randomBetween = (min, max) =>
+            Math.random() * (max - min) + min;
 
-        const leafFadeStartFromBottom = 95;
-        const leafEndFromBottom = 20;
-
-
-        function randomBetween(minimum, maximum) {
-
-            return Math.random() * (maximum - minimum) + minimum;
-
-        }
-
-
-        function clamp(value, minimum, maximum) {
-
-            return Math.max(
-                minimum,
-                Math.min(maximum, value)
-            );
-
-        }
-
+        const clamp = (value, min, max) =>
+            Math.max(min, Math.min(max, value));
 
         function dropLeaf() {
-
             const heroRect = hero.getBoundingClientRect();
             const treeRect = bgTree.getBoundingClientRect();
 
-
-            if (treeRect.width === 0 || treeRect.height === 0) {
-
-                return;
-
-            }
-
+            if (!treeRect.width || !treeRect.height) return;
 
             const leaf = document.createElement("img");
 
-            leaf.classList.add("falling-leaf");
-
-            leaf.src = "folhaprisma.png?v=1";
-            leaf.alt = "";
-
-
             const startX = randomBetween(
-
                 treeRect.left + treeRect.width * 0.20,
-
                 treeRect.left + treeRect.width * 0.78
-
-            );
-
+            ) - heroRect.left;
 
             const startY = randomBetween(
-
                 treeRect.top + treeRect.height * 0.04,
-
                 treeRect.top + treeRect.height * 0.30
+            ) - heroRect.top;
 
-            );
-
-
-            const startXInsideHero = startX - heroRect.left;
-            const startYInsideHero = startY - heroRect.top;
-
-
-            const fadeStartY =
-                heroRect.height - leafFadeStartFromBottom;
-
-            const endY =
-                heroRect.height - leafEndFromBottom;
-
-
-            const totalFallDistance = Math.max(
-
+            const totalFall = Math.max(
                 80,
-
-                endY - startYInsideHero
-
+                heroRect.height - 20 - startY
             );
 
-
-            const fadeStartDistance =
-                fadeStartY - startYInsideHero;
-
-
-            const fadeStartOffset = clamp(
-
-                fadeStartDistance / totalFallDistance,
-
+            const fadeOffset = clamp(
+                (heroRect.height - 95 - startY) / totalFall,
                 0.18,
-
                 0.92
-
             );
-
 
             const drift = randomBetween(-35, 35);
             const rotation = randomBetween(-25, 25);
-            const duration = randomBetween(2600, 3600);
 
-
-            leaf.style.left = `${startXInsideHero}px`;
-            leaf.style.top = `${startYInsideHero}px`;
-
+            leaf.className = "falling-leaf";
+            leaf.src = "folhaprisma.png?v=1";
+            leaf.alt = "";
+            leaf.style.left = `${startX}px`;
+            leaf.style.top = `${startY}px`;
 
             leafLayer.appendChild(leaf);
 
-
             const animation = leaf.animate(
-
                 [
-
                     {
                         opacity: 0,
-
-                        transform:
-                            "translate(0px, 0px) rotate(0deg)",
-
+                        transform: "translate(0, 0) rotate(0deg)",
                         offset: 0
                     },
-
                     {
                         opacity: 1,
-
                         transform:
-                            `translate(
-                                ${drift * 0.08}px,
-                                ${totalFallDistance * 0.08}px
-                            )
-                            rotate(${rotation * 0.08}deg)`,
-
+                            `translate(${drift * 0.08}px, ${totalFall * 0.08}px)
+                             rotate(${rotation * 0.08}deg)`,
                         offset: 0.08
                     },
-
                     {
                         opacity: 1,
-
                         transform:
-                            `translate(
-                                ${drift * fadeStartOffset}px,
-                                ${totalFallDistance * fadeStartOffset}px
-                            )
-                            rotate(
-                                ${rotation * fadeStartOffset}deg
-                            )`,
-
-                        offset: fadeStartOffset
+                            `translate(${drift * fadeOffset}px, ${totalFall * fadeOffset}px)
+                             rotate(${rotation * fadeOffset}deg)`,
+                        offset: fadeOffset
                     },
-
                     {
                         opacity: 0,
-
                         transform:
-                            `translate(
-                                ${drift}px,
-                                ${totalFallDistance}px
-                            )
-                            rotate(${rotation}deg)`,
-
+                            `translate(${drift}px, ${totalFall}px)
+                             rotate(${rotation}deg)`,
                         offset: 1
                     }
-
                 ],
-
                 {
-                    duration: duration,
+                    duration: randomBetween(2600, 3600),
                     easing: "linear",
                     fill: "forwards"
                 }
-
             );
 
-
-            animation.onfinish = function () {
-
-                leaf.remove();
-
-            };
-
+            animation.onfinish = () => leaf.remove();
         }
 
-
         setInterval(dropLeaf, 3500);
-
     </script>
-
 </body>
-
 </html>
