@@ -1,311 +1,446 @@
-@font-face{
-    font-family:"Determination";
-    src:url("determination.ttf") format("truetype");
+@font-face {
+    font-family: "Determination";
+
+    src:
+        url("determination.ttf")
+        format("truetype");
+
+    font-display: swap;
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+
+/* =========================================================
+   CONFIGURAÇÃO GERAL
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
 }
 
-body{
-    background:#000;
-    color:#fff;
-    font-family:Arial, Helvetica, sans-serif;
-    overflow-x:hidden;
+
+html {
+    background: #000;
 }
 
-/* TOPO */
 
-.topbar{
-    height:78px;
-    background:#000;
+body {
+    min-height: 100vh;
 
-    position:relative;
+    background: #000;
+    color: #fff;
 
-    padding:0 28px;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    z-index:5;
+    overflow-x: hidden;
 }
 
-/* LOGO PRISMA */
 
-.brand-area{
-    position:absolute;
-    left:28px;
-    top:50%;
-    transform:translateY(-50%);
+/* =========================================================
+   ENTRADA DO CABEÇALHO
+========================================================= */
+
+.header-wrap {
+    /*
+    O position e o z-index fazem a linha continuar visível
+    quando o cabeçalho ultrapassa a posição final e invade
+    alguns pixels da área da Home.
+    */
+    position: relative;
+    z-index: 10;
+
+    transform: translateY(-120px);
+
+    animation:
+        headerDrop
+        1s
+        cubic-bezier(0.18, 0.85, 0.22, 1)
+        forwards;
+
+    will-change: transform;
 }
 
-.brand-logo{
-    display:inline-flex;
-    align-items:center;
 
-    width:fit-content;
-    height:fit-content;
+@keyframes headerDrop {
 
-    text-decoration:none;
-    cursor:pointer;
-
-    position:relative;
-    top:2px;
-}
-
-.brand-logo img{
-    height:42px;
-    display:block;
-
-    pointer-events:none;
-}
-
-/* MENU */
-
-.menu{
-    position:absolute;
-    left:500px;
-    top:50%;
-    transform:translateY(-50%);
-
-    display:flex;
-    align-items:center;
-
-    pointer-events:none;
-    opacity:0;
-
-    transition:opacity .15s linear;
-}
-
-.menu.menu-ready{
-    pointer-events:auto;
-    opacity:1;
-}
-
-/* BOTÕES DO MENU */
-
-.menu-image{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    height:42px;
-
-    flex:0 0 auto;
-
-    text-decoration:none;
-    cursor:pointer;
-}
-
-/* LARGURA E DISTÂNCIA DE CADA BOTÃO */
-
-.menu-image.personagens{
-    width:205px;
-    margin-right:18px;
-}
-
-.menu-image.campanhas{
-    width:187px;
-    margin-right:14px;
-}
-
-.menu-image.sistema{
-    width:157px;
-    margin-right:0;
-}
-
-/* IMAGENS DOS BOTÕES */
-
-.menu-image img{
-    height:42px;
-    width:auto;
-
-    display:block;
-
-    pointer-events:none;
-
-    image-rendering:pixelated;
-    image-rendering:crisp-edges;
-
-    transition:transform 0.12s ease;
-}
-
-.menu-image:hover img{
-    transform:translateY(-1px);
-}
-
-/* PERFIL */
-
-.profile{
-    position:absolute;
-    right:28px;
-    top:50%;
-    transform:translateY(-50%);
-
-    width:46px;
-    height:46px;
-
-    border-radius:50%;
-
-    background:linear-gradient(
-        135deg,
-        #7c3cff,
-        #00aaff
-    );
-}
-
-/* LINHA */
-
-.line{
-    height:2px;
-    background:#fff;
-
-    position:relative;
-    z-index:4;
-
-    transform:translateY(-450px);
-
-    animation:lineDrop 0.9s cubic-bezier(.18,.85,.22,1) forwards;
-}
-
-@keyframes lineDrop{
-    from{
-        transform:translateY(-450px);
+    0% {
+        transform: translateY(-120px);
     }
 
-    to{
-        transform:translateY(0);
+    /*
+    O cabeçalho passa 12 pixels do ponto onde deveria parar.
+    */
+    78% {
+        transform: translateY(12px);
     }
+
+    /*
+    Depois ele sobe novamente até a posição correta.
+    */
+    100% {
+        transform: translateY(0);
+    }
+
 }
 
-/* CONTEÚDO */
 
-.hero{
-    min-height:calc(100vh - 80px);
-    background:#000;
+/* =========================================================
+   TOPO
+========================================================= */
 
-    position:relative;
+.topbar {
+    height: 78px;
 
-    overflow:hidden;
+    position: relative;
+
+    padding: 0 28px;
+
+    background: #000;
+
+    z-index: 5;
 }
 
-/* ÁRVORE DO FUNDO */
 
-.bg-tree{
-    position:absolute;
+/* =========================================================
+   APARECIMENTO SIMULTÂNEO DOS ELEMENTOS SUPERIORES
+========================================================= */
 
-    right:70px;
-    bottom:0;
+.brand-area,
+.menu,
+.profile {
+    opacity: 0;
+    visibility: hidden;
 
-    width:244px;
-    height:auto;
-
-    image-rendering:pixelated;
-    image-rendering:crisp-edges;
-
-    pointer-events:none;
-
-    z-index:0;
+    transition:
+        opacity
+        0.18s
+        ease-out;
 }
 
-/* CAMADA DAS FOLHAS */
 
-.leaf-layer{
-    position:absolute;
-
-    left:0;
-    top:0;
-
-    width:100%;
-    height:100%;
-
-    pointer-events:none;
-
-    z-index:1;
+.brand-area.show,
+.menu.menu-ready,
+.profile.show {
+    opacity: 1;
+    visibility: visible;
 }
 
-.falling-leaf{
-    position:absolute;
 
-    width:24px;
-    height:auto;
+/* =========================================================
+   LOGO PRISMA
+========================================================= */
 
-    opacity:0;
+.brand-area {
+    position: absolute;
 
-    image-rendering:pixelated;
-    image-rendering:crisp-edges;
+    left: 28px;
+    top: 50%;
 
-    pointer-events:none;
+    transform: translateY(-50%);
 }
 
-/* TEXTO DA HOME */
 
-.home-text{
-    position:absolute;
+.brand-logo {
+    display: inline-flex;
 
-    left:28px;
-    top:24px;
+    align-items: center;
 
-    transform:none;
+    width: fit-content;
+    height: fit-content;
 
-    text-align:left;
+    position: relative;
+    top: 2px;
 
-    font-family:"Determination", Arial, Helvetica, sans-serif;
+    text-decoration: none;
 
-    color:#fff;
-
-    z-index:2;
+    cursor: pointer;
 }
 
-.home-text h1{
-    font-size:16px;
-    font-weight:normal;
 
-    letter-spacing:1px;
-    line-height:1.35;
+.brand-logo img {
+    display: block;
+
+    height: 42px;
+
+    pointer-events: none;
+
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
-/* LETRAS NORMAIS */
 
-.typed-letter{
-    color:#fff;
+/* =========================================================
+   MENU
+========================================================= */
+
+.menu {
+    position: absolute;
+
+    left: 500px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    pointer-events: none;
 }
 
-/* APENAS O DEGRADÊ AZUL */
 
-.typed-letter.cold{
-    background:linear-gradient(
-        180deg,
-        #ffffff,
-        #a7dcff,
-        #4d8dff
-    );
-
-    -webkit-background-clip:text;
-    background-clip:text;
-
-    color:transparent;
+.menu.menu-ready {
+    pointer-events: auto;
 }
 
-/* header intro */
-.header-wrap{
- transform:translateY(-120px);
- animation:headerDrop 1s cubic-bezier(.18,.85,.22,1) forwards;
-}
-@keyframes headerDrop{
- 0%{transform:translateY(-120px);}
- 82%{transform:translateY(10px);}
- 100%{transform:translateY(0);}
-}
-.brand-area,.profile,.menu{opacity:0}
-.brand-area.show,.profile.show,.menu.menu-ready{
- animation:fadeIn .18s forwards;
-}
-@keyframes fadeIn{
- from{opacity:0}
- to{opacity:1}
-}
-.line{transform:none!important;animation:none!important}
 
-/* tree */
-.bg-tree{width:274px;}
-.falling-leaf{width:27px;}
+/* =========================================================
+   BOTÕES DO MENU
+========================================================= */
+
+.menu-image {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 42px;
+
+    flex: 0 0 auto;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   LARGURA E DISTÂNCIA DE CADA BOTÃO
+========================================================= */
+
+.menu-image.personagens {
+    width: 205px;
+
+    margin-right: 18px;
+}
+
+
+.menu-image.campanhas {
+    width: 187px;
+
+    margin-right: 14px;
+}
+
+
+.menu-image.sistema {
+    width: 157px;
+
+    margin-right: 0;
+}
+
+
+/* =========================================================
+   IMAGENS DOS BOTÕES
+========================================================= */
+
+.menu-image img {
+    display: block;
+
+    width: auto;
+    height: 42px;
+
+    pointer-events: none;
+
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+
+    transition:
+        transform
+        0.12s
+        ease;
+}
+
+
+.menu-image:hover img {
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   PERFIL
+========================================================= */
+
+.profile {
+    position: absolute;
+
+    right: 28px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3cff,
+            #00aaff
+        );
+}
+
+
+/* =========================================================
+   LINHA
+========================================================= */
+
+.line {
+    position: relative;
+
+    height: 2px;
+
+    background: #fff;
+
+    z-index: 11;
+}
+
+
+/* =========================================================
+   CONTEÚDO PRINCIPAL
+========================================================= */
+
+.hero {
+    position: relative;
+    z-index: 0;
+
+    min-height: calc(100vh - 80px);
+
+    background: #000;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   ÁRVORE DO FUNDO
+========================================================= */
+
+.bg-tree {
+    position: absolute;
+
+    right: 70px;
+    bottom: 0;
+
+    width: 274px;
+    height: auto;
+
+    pointer-events: none;
+
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+
+    z-index: 0;
+}
+
+
+/* =========================================================
+   CAMADA DAS FOLHAS
+========================================================= */
+
+.leaf-layer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+
+.falling-leaf {
+    position: absolute;
+
+    width: 27px;
+    height: auto;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+
+/* =========================================================
+   TEXTO DA HOME
+========================================================= */
+
+.home-text {
+    position: absolute;
+
+    left: 28px;
+    top: 24px;
+
+    text-align: left;
+
+    font-family:
+        "Determination",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #fff;
+
+    z-index: 2;
+}
+
+
+.home-text h1 {
+    font-size: 16px;
+    font-weight: normal;
+
+    letter-spacing: 1px;
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   LETRAS NORMAIS
+========================================================= */
+
+.typed-letter {
+    color: #fff;
+}
+
+
+/* =========================================================
+   DEGRADÊ AZUL DA PALAVRA "FRIO"
+========================================================= */
+
+.typed-letter.cold {
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #a7dcff,
+            #4d8dff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
