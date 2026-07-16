@@ -90,13 +90,7 @@ headerWrap.addEventListener("animationend",(e)=>{
  if(e.animationName!=="headerDrop")return;
  brand.classList.add("show");
  profile.classList.add("show");
- brand.classList.add("show");
- profile.classList.add("show");
- menu.classList.add("show");
- menu.classList.add("menu-ready");
- setTimeout(()=>{
-    // startTypewriter() será chamado após a animação do header.
- },200);
+ setTimeout(()=>menu.classList.add("menu-ready"),120);
 });
 
 const selectSound = document.getElementById("selectSound");
@@ -228,7 +222,7 @@ async function startTypewriter(){
     }
 }
 
-// startTypewriter() será chamado após a animação do header.
+startTypewriter();
 
 buttons.forEach(button => {
 
@@ -270,7 +264,7 @@ homeButton.addEventListener("click", function(e){
 
     });
 
-    // startTypewriter() será chamado após a animação do header.
+    startTypewriter();
 
 });
 
