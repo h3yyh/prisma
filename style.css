@@ -1,446 +1,210 @@
 @font-face {
     font-family: "Determination";
-
-    src:
-        url("determination.ttf")
-        format("truetype");
-
-    font-display: swap;
+    src: url("determination.ttf") format("truetype");
 }
-
-
-/* =========================================================
-   CONFIGURAÇÃO GERAL
-========================================================= */
 
 * {
     margin: 0;
     padding: 0;
-
     box-sizing: border-box;
 }
 
-
-html {
-    background: #000;
-}
-
-
 body {
     min-height: 100vh;
-
     background: #000;
     color: #fff;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+    font-family: Arial, Helvetica, sans-serif;
     overflow-x: hidden;
 }
 
-
-/* =========================================================
-   ENTRADA DO CABEÇALHO
-========================================================= */
-
 .header-wrap {
-    /*
-    O position e o z-index fazem a linha continuar visível
-    quando o cabeçalho ultrapassa a posição final e invade
-    alguns pixels da área da Home.
-    */
     position: relative;
     z-index: 10;
-
     transform: translateY(-120px);
-
-    animation:
-        headerDrop
-        1s
-        cubic-bezier(0.18, 0.85, 0.22, 1)
-        forwards;
-
-    will-change: transform;
+    animation: headerDrop 1.4s cubic-bezier(.18, .85, .22, 1) forwards;
 }
 
-
 @keyframes headerDrop {
-
     0% {
         transform: translateY(-120px);
     }
 
-    /*
-    O cabeçalho passa 12 pixels do ponto onde deveria parar.
-    */
-    78% {
+    68% {
         transform: translateY(12px);
     }
 
-    /*
-    Depois ele sobe novamente até a posição correta.
-    */
     100% {
         transform: translateY(0);
     }
-
 }
-
-
-/* =========================================================
-   TOPO
-========================================================= */
 
 .topbar {
-    height: 78px;
-
     position: relative;
-
+    height: 78px;
     padding: 0 28px;
-
     background: #000;
-
-    z-index: 5;
 }
-
-
-/* =========================================================
-   APARECIMENTO SIMULTÂNEO DOS ELEMENTOS SUPERIORES
-========================================================= */
 
 .brand-area,
 .menu,
 .profile {
     opacity: 0;
     visibility: hidden;
-
-    transition:
-        opacity
-        0.18s
-        ease-out;
+    transition: opacity .18s linear;
 }
 
-
-.brand-area.show,
-.menu.menu-ready,
-.profile.show {
+.header-wrap.ready .brand-area,
+.header-wrap.ready .menu,
+.header-wrap.ready .profile {
     opacity: 1;
     visibility: visible;
 }
 
-
-/* =========================================================
-   LOGO PRISMA
-========================================================= */
-
 .brand-area {
     position: absolute;
-
     left: 28px;
     top: 50%;
-
     transform: translateY(-50%);
 }
 
-
 .brand-logo {
-    display: inline-flex;
-
-    align-items: center;
-
-    width: fit-content;
-    height: fit-content;
-
     position: relative;
     top: 2px;
-
+    display: inline-flex;
+    align-items: center;
     text-decoration: none;
-
-    cursor: pointer;
 }
 
-
-.brand-logo img {
+.brand-logo img,
+.menu-image img {
     display: block;
-
+    width: auto;
     height: 42px;
-
     pointer-events: none;
-
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
-
-
-/* =========================================================
-   MENU
-========================================================= */
 
 .menu {
     position: absolute;
-
     left: 500px;
     top: 50%;
-
-    transform: translateY(-50%);
-
     display: flex;
-
     align-items: center;
-
+    transform: translateY(-50%);
     pointer-events: none;
 }
 
-
-.menu.menu-ready {
+.header-wrap.ready .menu {
     pointer-events: auto;
 }
 
-
-/* =========================================================
-   BOTÕES DO MENU
-========================================================= */
-
 .menu-image {
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     height: 42px;
-
     flex: 0 0 auto;
-
     text-decoration: none;
-
-    cursor: pointer;
 }
-
-
-/* =========================================================
-   LARGURA E DISTÂNCIA DE CADA BOTÃO
-========================================================= */
 
 .menu-image.personagens {
     width: 205px;
-
     margin-right: 18px;
 }
 
-
 .menu-image.campanhas {
     width: 187px;
-
     margin-right: 14px;
 }
 
-
 .menu-image.sistema {
     width: 157px;
-
-    margin-right: 0;
 }
-
-
-/* =========================================================
-   IMAGENS DOS BOTÕES
-========================================================= */
 
 .menu-image img {
-    display: block;
-
-    width: auto;
-    height: 42px;
-
-    pointer-events: none;
-
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-
-    transition:
-        transform
-        0.12s
-        ease;
+    transition: transform .12s ease;
 }
-
 
 .menu-image:hover img {
     transform: translateY(-1px);
 }
 
-
-/* =========================================================
-   PERFIL
-========================================================= */
-
 .profile {
     position: absolute;
-
     right: 28px;
     top: 50%;
-
-    transform: translateY(-50%);
-
     width: 46px;
     height: 46px;
-
+    transform: translateY(-50%);
     border-radius: 50%;
-
-    background:
-        linear-gradient(
-            135deg,
-            #7c3cff,
-            #00aaff
-        );
+    background: linear-gradient(135deg, #7c3cff, #00aaff);
 }
-
-
-/* =========================================================
-   LINHA
-========================================================= */
 
 .line {
-    position: relative;
-
     height: 2px;
-
     background: #fff;
-
-    z-index: 11;
 }
-
-
-/* =========================================================
-   CONTEÚDO PRINCIPAL
-========================================================= */
 
 .hero {
     position: relative;
-    z-index: 0;
-
     min-height: calc(100vh - 80px);
-
     background: #000;
-
     overflow: hidden;
 }
 
-
-/* =========================================================
-   ÁRVORE DO FUNDO
-========================================================= */
-
 .bg-tree {
     position: absolute;
-
     right: 70px;
     bottom: 0;
-
     width: 274px;
     height: auto;
-
+    z-index: 0;
     pointer-events: none;
-
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-
-    z-index: 0;
 }
-
-
-/* =========================================================
-   CAMADA DAS FOLHAS
-========================================================= */
 
 .leaf-layer {
     position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
-
+    inset: 0;
     z-index: 1;
+    pointer-events: none;
 }
-
 
 .falling-leaf {
     position: absolute;
-
     width: 27px;
     height: auto;
-
     opacity: 0;
-
     pointer-events: none;
-
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
 
-
-/* =========================================================
-   TEXTO DA HOME
-========================================================= */
-
 .home-text {
     position: absolute;
-
     left: 28px;
     top: 24px;
-
-    text-align: left;
-
-    font-family:
-        "Determination",
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    color: #fff;
-
     z-index: 2;
+    font-family: "Determination", Arial, Helvetica, sans-serif;
+    color: #fff;
 }
-
 
 .home-text h1 {
     font-size: 16px;
     font-weight: normal;
-
     letter-spacing: 1px;
     line-height: 1.35;
 }
-
-
-/* =========================================================
-   LETRAS NORMAIS
-========================================================= */
 
 .typed-letter {
     color: #fff;
 }
 
-
-/* =========================================================
-   DEGRADÊ AZUL DA PALAVRA "FRIO"
-========================================================= */
-
 .typed-letter.cold {
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff,
-            #a7dcff,
-            #4d8dff
-        );
-
+    background: linear-gradient(180deg, #fff, #a7dcff, #4d8dff);
     -webkit-background-clip: text;
     background-clip: text;
-
     color: transparent;
 }
