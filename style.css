@@ -1,387 +1,311 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRISMA</title>
-
-    <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=15">
-</head>
-
-<body>
-
-<div class="header-wrap">
-<header class="topbar">
-
-    <div class="brand-area">
-        <a href="#" class="brand-logo" id="homeButton">
-            <img src="prisma-logo.png" alt="PRISMA">
-        </a>
-    </div>
-
-    <nav class="menu">
-
-        <a
-            href="#"
-            class="menu-image personagens"
-            data-normal="personagens.png?v=2"
-            data-active="personagens-active.png?v=2">
-
-            <img src="personagens.png?v=2" alt="Personagens">
-
-        </a>
-
-        <a
-            href="#"
-            class="menu-image campanhas"
-            data-normal="campanhas.png?v=2"
-            data-active="campanhas-active.png?v=2">
-
-            <img src="campanhas.png?v=2" alt="Campanhas">
-
-        </a>
-        
-        <a
-            href="#"
-            class="menu-image sistema"
-            data-normal="sistema.png?v=2"
-            data-active="sistema-active.png?v=2">
-
-            <img src="sistema.png?v=2" alt="Sistema">
-
-        </a>
-        
-    </nav>
-
-    <div class="profile"></div>
-
-</header>
-
-<div class="line"></div>
-</div>
-
-<main class="hero">
-
-    <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
-
-    <div class="leaf-layer" id="leafLayer"></div>
-
-    <section class="home-text">
-        <h1 id="typeText"></h1>
-    </section>
-
-</main>
-
-<audio id="selectSound" src="sndselectundertale.mp3"></audio>
-<audio id="homeSound" src="snd_saveprisma.mp3"></audio>
-
-<script>
-
-const buttons = document.querySelectorAll(".menu-image");
-const menu = document.querySelector(".menu");
-
-const line = document.querySelector(".line");
-const headerWrap=document.querySelector(".header-wrap");
-const brand=document.querySelector(".brand-area");
-const profile=document.querySelector(".profile");
-
-headerWrap.addEventListener("animationend",(e)=>{
- if(e.animationName!=="headerDrop")return;
- brand.classList.add("show");
- profile.classList.add("show");
- brand.classList.add("show");
- profile.classList.add("show");
- menu.classList.add("show");
- menu.classList.add("menu-ready");
- setTimeout(()=>{
-    // startTypewriter() será chamado após a animação do header.
- },200);
-});
-
-const selectSound = document.getElementById("selectSound");
-const homeSound = document.getElementById("homeSound");
-
-selectSound.volume = 0.25;
-homeSound.volume = 0.25;
-
-const homeButton = document.getElementById("homeButton");
-
-const typeText = document.getElementById("typeText");
-
-const initialTypeDelay = 350;
-
-const homeMessage = [
-    {
-        text: "Tá tão...",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: " fri",
-        speed: 120,
-        effect: "cold",
-    },
-
-    {
-        text: "o",
-        speed: 90,
-        effect: "cold",
-    },
-    
-    {
-        text: ".\n\n",
-        speed: 70,
-        effect: "normal",
-        pauseAfter: 500
-    },
-
-    {
-        text: "...\n\n",
-        speed: 330,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: "Já já vai começar de novo.\n\n",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 700
-    },
-
-    {
-        text: "...\n\n",
-        speed: 330,
-        effect: "normal",
-        pauseAfter: 1000
-    },
-
-    {
-        text: "Eu vou pegar um casaco.\n\n",
-        speed: 35,
-        effect: "normal",
-        pauseAfter: 400
-    },
-
-    {
-        text: "Você quer vir comigo?",
-        speed: 35,
-        effect: "normal"
-    }
-];
-
-let typingRun = 0;
-
-function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
+@font-face{
+    font-family:"Determination";
+    src:url("determination.ttf") format("truetype");
 }
 
-async function startTypewriter(){
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    typingRun++;
-    const currentRun = typingRun;
+body{
+    background:#000;
+    color:#fff;
+    font-family:Arial, Helvetica, sans-serif;
+    overflow-x:hidden;
+}
 
-    typeText.innerHTML = "";
+/* TOPO */
 
-    await wait(initialTypeDelay);
+.topbar{
+    height:78px;
+    background:#000;
 
-    if(currentRun !== typingRun) return;
+    position:relative;
 
-    for(const block of homeMessage){
+    padding:0 28px;
 
-        if(currentRun !== typingRun) return;
+    z-index:5;
+}
 
-        if(block.pauseBefore){
-            await wait(block.pauseBefore);
-        }
+/* LOGO PRISMA */
 
-        for(const char of block.text){
+.brand-area{
+    position:absolute;
+    left:28px;
+    top:50%;
+    transform:translateY(-50%);
+}
 
-            if(currentRun !== typingRun) return;
+.brand-logo{
+    display:inline-flex;
+    align-items:center;
 
-            if(char === "\n"){
-                typeText.appendChild(document.createElement("br"));
-            }else{
-                const letter = document.createElement("span");
+    width:fit-content;
+    height:fit-content;
 
-                letter.classList.add("typed-letter");
-                letter.classList.add(block.effect || "normal");
+    text-decoration:none;
+    cursor:pointer;
 
-                if(char === " "){
-                    letter.innerHTML = "&nbsp;";
-                }else{
-                    letter.textContent = char;
-                }
+    position:relative;
+    top:2px;
+}
 
-                typeText.appendChild(letter);
-            }
+.brand-logo img{
+    height:42px;
+    display:block;
 
-            await wait(block.speed || 45);
-        }
+    pointer-events:none;
+}
 
-        if(block.pauseAfter){
-            await wait(block.pauseAfter);
-        }
+/* MENU */
+
+.menu{
+    position:absolute;
+    left:500px;
+    top:50%;
+    transform:translateY(-50%);
+
+    display:flex;
+    align-items:center;
+
+    pointer-events:none;
+    opacity:0;
+
+    transition:opacity .15s linear;
+}
+
+.menu.menu-ready{
+    pointer-events:auto;
+    opacity:1;
+}
+
+/* BOTÕES DO MENU */
+
+.menu-image{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    height:42px;
+
+    flex:0 0 auto;
+
+    text-decoration:none;
+    cursor:pointer;
+}
+
+/* LARGURA E DISTÂNCIA DE CADA BOTÃO */
+
+.menu-image.personagens{
+    width:205px;
+    margin-right:18px;
+}
+
+.menu-image.campanhas{
+    width:187px;
+    margin-right:14px;
+}
+
+.menu-image.sistema{
+    width:157px;
+    margin-right:0;
+}
+
+/* IMAGENS DOS BOTÕES */
+
+.menu-image img{
+    height:42px;
+    width:auto;
+
+    display:block;
+
+    pointer-events:none;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    transition:transform 0.12s ease;
+}
+
+.menu-image:hover img{
+    transform:translateY(-1px);
+}
+
+/* PERFIL */
+
+.profile{
+    position:absolute;
+    right:28px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        #7c3cff,
+        #00aaff
+    );
+}
+
+/* LINHA */
+
+.line{
+    height:2px;
+    background:#fff;
+
+    position:relative;
+    z-index:4;
+
+    transform:translateY(-450px);
+
+    animation:lineDrop 0.9s cubic-bezier(.18,.85,.22,1) forwards;
+}
+
+@keyframes lineDrop{
+    from{
+        transform:translateY(-450px);
+    }
+
+    to{
+        transform:translateY(0);
     }
 }
 
-// startTypewriter() será chamado após a animação do header.
+/* CONTEÚDO */
 
-buttons.forEach(button => {
+.hero{
+    min-height:calc(100vh - 80px);
+    background:#000;
 
-    button.addEventListener("click", function(e){
+    position:relative;
 
-        e.preventDefault();
-
-        selectSound.currentTime = 0;
-        selectSound.play();
-
-        buttons.forEach(item => {
-
-            item.classList.remove("active");
-
-            item.querySelector("img").src = item.dataset.normal;
-
-        });
-
-        this.classList.add("active");
-
-        this.querySelector("img").src = this.dataset.active;
-
-    });
-
-});
-
-homeButton.addEventListener("click", function(e){
-
-    e.preventDefault();
-
-    homeSound.currentTime = 0;
-    homeSound.play();
-
-    buttons.forEach(item => {
-
-        item.classList.remove("active");
-
-        item.querySelector("img").src = item.dataset.normal;
-
-    });
-
-    // startTypewriter() será chamado após a animação do header.
-
-});
-
-/* FOLHAS CAINDO */
-
-const hero = document.querySelector(".hero");
-const bgTree = document.getElementById("bgTree");
-const leafLayer = document.getElementById("leafLayer");
-
-const leafFadeStartFromBottom = 95;
-const leafEndFromBottom = 20;
-
-function randomBetween(min, max){
-    return Math.random() * (max - min) + min;
+    overflow:hidden;
 }
 
-function clamp(value, min, max){
-    return Math.max(min, Math.min(max, value));
+/* ÁRVORE DO FUNDO */
+
+.bg-tree{
+    position:absolute;
+
+    right:70px;
+    bottom:0;
+
+    width:244px;
+    height:auto;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+
+    z-index:0;
 }
 
-function dropLeaf(){
+/* CAMADA DAS FOLHAS */
 
-    const heroRect = hero.getBoundingClientRect();
-    const treeRect = bgTree.getBoundingClientRect();
+.leaf-layer{
+    position:absolute;
 
-    if(treeRect.width === 0 || treeRect.height === 0){
-        return;
-    }
+    left:0;
+    top:0;
 
-    const leaf = document.createElement("img");
+    width:100%;
+    height:100%;
 
-    leaf.classList.add("falling-leaf");
-    leaf.src = "folhaprisma.png?v=1";
-    leaf.alt = "";
+    pointer-events:none;
 
-    const startX = randomBetween(
-        treeRect.left + treeRect.width * 0.20,
-        treeRect.left + treeRect.width * 0.78
-    );
-
-    const startY = randomBetween(
-        treeRect.top + treeRect.height * 0.04,
-        treeRect.top + treeRect.height * 0.30
-    );
-
-    const startXInsideHero = startX - heroRect.left;
-    const startYInsideHero = startY - heroRect.top;
-
-    const fadeStartY = heroRect.height - leafFadeStartFromBottom;
-    const endY = heroRect.height - leafEndFromBottom;
-
-    const totalFallDistance = Math.max(80, endY - startYInsideHero);
-
-    const fadeStartDistance = fadeStartY - startYInsideHero;
-
-    const fadeStartOffset = clamp(
-        fadeStartDistance / totalFallDistance,
-        0.18,
-        0.92
-    );
-
-    const drift = randomBetween(-35, 35);
-    const rotation = randomBetween(-25, 25);
-    const duration = randomBetween(2600, 3600);
-
-    leaf.style.left = `${startXInsideHero}px`;
-    leaf.style.top = `${startYInsideHero}px`;
-
-    leafLayer.appendChild(leaf);
-
-    const animation = leaf.animate(
-        [
-            {
-                opacity: 0,
-                transform: "translate(0px, 0px) rotate(0deg)",
-                offset: 0
-            },
-
-            {
-                opacity: 1,
-                transform: `translate(${drift * 0.08}px, ${totalFallDistance * 0.08}px) rotate(${rotation * 0.08}deg)`,
-                offset: 0.08
-            },
-
-            {
-                opacity: 1,
-                transform: `translate(${drift * fadeStartOffset}px, ${totalFallDistance * fadeStartOffset}px) rotate(${rotation * fadeStartOffset}deg)`,
-                offset: fadeStartOffset
-            },
-
-            {
-                opacity: 0,
-                transform: `translate(${drift}px, ${totalFallDistance}px) rotate(${rotation}deg)`,
-                offset: 1
-            }
-        ],
-        {
-            duration: duration,
-            easing: "linear",
-            fill: "forwards"
-        }
-    );
-
-    animation.onfinish = function(){
-        leaf.remove();
-    };
+    z-index:1;
 }
 
-setInterval(dropLeaf, 3500);
+.falling-leaf{
+    position:absolute;
 
-</script>
+    width:24px;
+    height:auto;
 
-</body>
-</html>
+    opacity:0;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+    pointer-events:none;
+}
+
+/* TEXTO DA HOME */
+
+.home-text{
+    position:absolute;
+
+    left:28px;
+    top:24px;
+
+    transform:none;
+
+    text-align:left;
+
+    font-family:"Determination", Arial, Helvetica, sans-serif;
+
+    color:#fff;
+
+    z-index:2;
+}
+
+.home-text h1{
+    font-size:16px;
+    font-weight:normal;
+
+    letter-spacing:1px;
+    line-height:1.35;
+}
+
+/* LETRAS NORMAIS */
+
+.typed-letter{
+    color:#fff;
+}
+
+/* APENAS O DEGRADÊ AZUL */
+
+.typed-letter.cold{
+    background:linear-gradient(
+        180deg,
+        #ffffff,
+        #a7dcff,
+        #4d8dff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+}
+
+/* header intro */
+.header-wrap{
+ transform:translateY(-120px);
+ animation:headerDrop 1s cubic-bezier(.18,.85,.22,1) forwards;
+}
+@keyframes headerDrop{
+ 0%{transform:translateY(-120px);}
+ 82%{transform:translateY(10px);}
+ 100%{transform:translateY(0);}
+}
+.brand-area,.profile,.menu{opacity:0}
+.brand-area.show,.profile.show,.menu.menu-ready{
+ animation:fadeIn .18s forwards;
+}
+@keyframes fadeIn{
+ from{opacity:0}
+ to{opacity:1}
+}
+.line{transform:none!important;animation:none!important}
+
+/* tree */
+.bg-tree{width:274px;}
+.falling-leaf{width:27px;}
