@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
     <div class="start-screen" id="startScreen">
-        <button class="start-button" id="startButton" type="button">
-            CLIQUE PARA ENTRAR
+        <button class="start-logo-button" id="startButton" type="button" aria-label="Entrar no Prisma">
+            <img src="prisma-logo.png" alt="PRISMA">
         </button>
     </div>
 
@@ -42,10 +42,15 @@
                 </a>
             </nav>
 
-            <div class="profile" role="img" aria-label="Foto de perfil">
+            <button class="profile"
+                    id="profileButton"
+                    type="button"
+                    aria-label="Abrir perfil"
+                    aria-controls="profileOverlay"
+                    aria-expanded="false">
                 <img class="profile-photo" src="perfilfotoprisma.png?v=1" alt="">
                 <img class="profile-frame" src="perfilprisma.png?v=1" alt="">
-            </div>
+            </button>
         </header>
 
         <div class="line"></div>
@@ -106,8 +111,41 @@
         </div>
     </main>
 
+    <div class="profile-overlay" id="profileOverlay" aria-hidden="true">
+        <section class="profile-panel"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="profileTitle">
+
+            <button class="profile-close" id="profileClose" type="button" aria-label="Fechar perfil">
+                X
+            </button>
+
+            <h2 id="profileTitle">PERFIL</h2>
+
+            <div class="profile-panel-user">
+                <div class="profile-panel-avatar">
+                    <img class="profile-photo" src="perfilfotoprisma.png?v=1" alt="">
+                    <img class="profile-frame" src="perfilprisma.png?v=1" alt="">
+                </div>
+
+                <div>
+                    <h3>USUÁRIO</h3>
+                    <p>Este espaço poderá mostrar o nome e a descrição do perfil.</p>
+                </div>
+            </div>
+
+            <div class="profile-panel-info">
+                <p><span>STATUS</span> EM DESENVOLVIMENTO</p>
+                <p><span>CAMPANHAS</span> 0</p>
+                <p><span>PERSONAGENS</span> 0</p>
+            </div>
+        </section>
+    </div>
+
     <audio id="selectSound" src="sndselectundertale.mp3"></audio>
     <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
+    <audio id="openSound" src="prismabrindo.mp3"></audio>
     <audio id="bgMusic" src="conexãoprisma.mp3" loop preload="auto"></audio>
 
     <script>
@@ -118,8 +156,13 @@
         const homeButton = document.getElementById("homeButton");
         const typeText = document.getElementById("typeText");
 
+        const profileButton = document.getElementById("profileButton");
+        const profileOverlay = document.getElementById("profileOverlay");
+        const profileClose = document.getElementById("profileClose");
+
         const selectSound = document.getElementById("selectSound");
         const homeSound = document.getElementById("homeSound");
+        const openSound = document.getElementById("openSound");
         const bgMusic = document.getElementById("bgMusic");
 
         const volumeSlider = document.getElementById("volumeSlider");
@@ -139,13 +182,14 @@
         let leafTimer = 0;
         let volumePercent = INITIAL_VOLUME;
         let draggingVolume = false;
+        let lastFocusedElement = null;
 
         selectSound.volume = 0.25;
         homeSound.volume = 0.25;
+        openSound.volume = 0.35;
 
         const musicBlocks = [
-            { text: "fri", speed: 120, effect: "cold" },
-            { text: "o", speed: 90, effect: "cold" },
+            { text: "frio", speed: 130, effect: "cold" },
             { text: ".\n\n", speed: 70, pauseAfter: 500 },
             { text: "...\n\n", speed: 330, pauseAfter: 1000 },
             { text: "Já já vai começar de novo.\n\n", speed: 35, pauseAfter: 700 },
@@ -193,7 +237,6 @@
             }
 
             const letter = document.createElement("span");
-
             letter.className = `typed-letter ${effect}`;
             letter.textContent = char === " " ? "\u00A0" : char;
 
@@ -207,22 +250,19 @@
 
         async function beginExperience() {
             startButton.disabled = true;
+
+            playSound(openSound);
+
             bgMusic.currentTime = 0;
             bgMusic.volume = 0;
+            bgMusic.play().catch(() => {});
 
-            try {
-                await bgMusic.play();
+            document.body.classList.add("started");
+            startScreen.classList.add("leaving");
 
-                document.body.classList.add("started");
-                startScreen.classList.add("leaving");
-
-                setTimeout(() => {
-                    startScreen.remove();
-                }, 400);
-            } catch {
-                startButton.disabled = false;
-                startButton.textContent = "CLIQUE NOVAMENTE";
-            }
+            setTimeout(() => {
+                startScreen.remove();
+            }, 400);
         }
 
         startButton.addEventListener("click", beginExperience);
@@ -247,7 +287,6 @@
             leafLayer.replaceChildren();
 
             bgMusic.volume = 0;
-            bgMusic.currentTime = 0;
         }
 
         function startHomeSequence() {
@@ -276,19 +315,47 @@
 
             if (currentRun !== typingRun) return;
 
-            appendCharacter(" ", "cold");
+            appendCharacter(" ");
             await wait(120);
 
             if (currentRun !== typingRun) return;
 
-            startMusicSequence(currentRun);
+            await startMusicSequence(currentRun);
         }
 
-        function startMusicSequence(currentRun) {
+        function rewindMusic() {
+            return new Promise(resolve => {
+                let finished = false;
+
+                function finish() {
+                    if (finished) return;
+
+                    finished = true;
+                    bgMusic.removeEventListener("seeked", finish);
+                    resolve();
+                }
+
+                bgMusic.addEventListener("seeked", finish, { once: true });
+                bgMusic.currentTime = 0;
+
+                setTimeout(finish, 250);
+            });
+        }
+
+        async function startMusicSequence(currentRun) {
+            bgMusic.volume = 0;
+
+            if (bgMusic.paused) {
+                bgMusic.play().catch(() => {});
+            }
+
+            await rewindMusic();
+
+            if (currentRun !== typingRun) return;
+
             musicStarted = true;
             musicIndex = 0;
 
-            bgMusic.currentTime = 0;
             bgMusic.volume = volumePercent / 100;
 
             document.body.classList.add("music-live");
@@ -354,6 +421,47 @@
             playSound(homeSound);
             resetButtons();
             startHomeSequence();
+        });
+
+        function openProfile() {
+            lastFocusedElement = document.activeElement;
+
+            playSound(selectSound);
+
+            profileOverlay.classList.add("open");
+            profileOverlay.setAttribute("aria-hidden", "false");
+            profileButton.setAttribute("aria-expanded", "true");
+
+            document.body.classList.add("profile-open");
+            profileClose.focus();
+        }
+
+        function closeProfile() {
+            profileOverlay.classList.remove("open");
+            profileOverlay.setAttribute("aria-hidden", "true");
+            profileButton.setAttribute("aria-expanded", "false");
+
+            document.body.classList.remove("profile-open");
+
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+            }
+        }
+
+        profileButton.addEventListener("click", openProfile);
+        profileClose.addEventListener("click", closeProfile);
+
+        profileOverlay.addEventListener("click", event => {
+            if (event.target === profileOverlay) {
+                closeProfile();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" &&
+                profileOverlay.classList.contains("open")) {
+                closeProfile();
+            }
         });
 
         function setVolume(value) {
