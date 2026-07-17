@@ -87,7 +87,7 @@
 
             typeText.innerHTML = "";
 
-            await wait(180);
+            await wait(0);
 
             for (const block of homeMessage) {
                 if (currentRun !== typingRun) return;
@@ -136,7 +136,7 @@
 
             headerWrap.classList.add("ready");
 
-            setTimeout(startTypewriter, 350);
+            setTimeout(startTypewriter, 1000);
         });
 
         buttons.forEach(button => {
