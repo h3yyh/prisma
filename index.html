@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
     <div class="header-wrap" id="headerWrap">
@@ -36,7 +36,10 @@
                 </a>
             </nav>
 
-            <div class="profile"></div>
+            <div class="profile" role="img" aria-label="Foto de perfil">
+                <img class="profile-photo" src="perfilfotoprisma.png?v=1" alt="">
+                <img class="profile-frame" src="perfilprisma.png?v=1" alt="">
+            </div>
         </header>
 
         <div class="line"></div>
@@ -84,10 +87,7 @@
 
         async function startTypewriter() {
             const currentRun = ++typingRun;
-
             typeText.innerHTML = "";
-
-            await wait(0);
 
             for (const block of homeMessage) {
                 if (currentRun !== typingRun) return;
@@ -99,13 +99,8 @@
                         typeText.appendChild(document.createElement("br"));
                     } else {
                         const letter = document.createElement("span");
-
-                        letter.className =
-                            `typed-letter ${block.effect || "normal"}`;
-
-                        letter.innerHTML =
-                            char === " " ? "&nbsp;" : char;
-
+                        letter.className = `typed-letter ${block.effect || "normal"}`;
+                        letter.textContent = char === " " ? "\u00A0" : char;
                         typeText.appendChild(letter);
                     }
 
@@ -121,8 +116,7 @@
         function resetButtons() {
             buttons.forEach(button => {
                 button.classList.remove("active");
-                button.querySelector("img").src =
-                    button.dataset.normal;
+                button.querySelector("img").src = button.dataset.normal;
             });
         }
 
@@ -132,10 +126,10 @@
         }
 
         headerWrap.addEventListener("animationend", event => {
-            if (event.animationName !== "headerDrop") return;
+            if (event.target !== headerWrap ||
+                event.animationName !== "headerDrop") return;
 
             headerWrap.classList.add("ready");
-
             setTimeout(startTypewriter, 1000);
         });
 
@@ -147,8 +141,7 @@
                 resetButtons();
 
                 button.classList.add("active");
-                button.querySelector("img").src =
-                    button.dataset.active;
+                button.querySelector("img").src = button.dataset.active;
             });
         });
 
@@ -219,23 +212,17 @@
                     },
                     {
                         opacity: 1,
-                        transform:
-                            `translate(${drift * 0.08}px, ${totalFall * 0.08}px)
-                             rotate(${rotation * 0.08}deg)`,
+                        transform: `translate(${drift * 0.08}px, ${totalFall * 0.08}px) rotate(${rotation * 0.08}deg)`,
                         offset: 0.08
                     },
                     {
                         opacity: 1,
-                        transform:
-                            `translate(${drift * fadeOffset}px, ${totalFall * fadeOffset}px)
-                             rotate(${rotation * fadeOffset}deg)`,
+                        transform: `translate(${drift * fadeOffset}px, ${totalFall * fadeOffset}px) rotate(${rotation * fadeOffset}deg)`,
                         offset: fadeOffset
                     },
                     {
                         opacity: 0,
-                        transform:
-                            `translate(${drift}px, ${totalFall}px)
-                             rotate(${rotation}deg)`,
+                        transform: `translate(${drift}px, ${totalFall}px) rotate(${rotation}deg)`,
                         offset: 1
                     }
                 ],
