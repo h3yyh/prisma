@@ -17,6 +17,10 @@ body {
     overflow-x: hidden;
 }
 
+body.profile-open {
+    overflow: hidden;
+}
+
 .start-screen {
     position: fixed;
     inset: 0;
@@ -34,22 +38,30 @@ body {
     pointer-events: none;
 }
 
-.start-button {
-    padding: 14px 20px;
-    border: 2px solid #fff;
-    background: #000;
-    color: #fff;
-    font-family: "Determination", monospace;
-    font-size: 18px;
-    letter-spacing: 1px;
+.start-logo-button {
+    padding: 0;
+    border: 0;
+    background: none;
     cursor: pointer;
 }
 
-.start-button:hover,
-.start-button:focus-visible {
-    border-color: #ff0;
-    color: #ff0;
-    outline: none;
+.start-logo-button img {
+    display: block;
+    width: min(420px, 72vw);
+    height: auto;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    transition: transform .12s ease;
+}
+
+.start-logo-button:hover img,
+.start-logo-button:focus-visible img {
+    transform: scale(1.02);
+}
+
+.start-logo-button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 12px;
 }
 
 .header-wrap {
@@ -174,10 +186,13 @@ body.started .header-wrap {
     top: 50%;
     width: 52px;
     height: 52px;
-    background: #fff;
+    padding: 0;
+    border: 0;
     border-radius: 50%;
+    background: #fff;
     transform: translateY(-50%);
     overflow: hidden;
+    cursor: pointer;
 }
 
 .profile-photo,
@@ -375,4 +390,106 @@ body.music-live .volume-control {
 .volume-slider:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 5px;
+}
+
+.profile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .72);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .15s linear, visibility 0s linear .15s;
+}
+
+.profile-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+
+.profile-panel {
+    position: relative;
+    width: min(520px, 100%);
+    min-height: 310px;
+    padding: 26px;
+    border: 4px solid #fff;
+    background: #000;
+    box-shadow: 0 0 0 4px #000;
+    font-family: "Determination", Arial, Helvetica, sans-serif;
+}
+
+.profile-panel h2 {
+    margin-bottom: 24px;
+    color: #ff0;
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 2px;
+}
+
+.profile-close {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    border: 0;
+    background: none;
+    color: #fff;
+    font-family: "Determination", monospace;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.profile-close:hover,
+.profile-close:focus-visible {
+    color: #ff0;
+    outline: none;
+}
+
+.profile-panel-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-panel-user h3 {
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.profile-panel-user p {
+    max-width: 310px;
+    color: #aaa;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.profile-panel-avatar {
+    position: relative;
+    flex: 0 0 auto;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #fff;
+    overflow: hidden;
+}
+
+.profile-panel-info {
+    margin-top: 24px;
+    padding: 16px;
+    border: 2px solid #fff;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.profile-panel-info span {
+    display: inline-block;
+    width: 150px;
+    color: #ff0;
 }
