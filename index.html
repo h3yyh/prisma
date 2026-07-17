@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
+    <div class="start-screen" id="startScreen">
+        <button class="start-button" id="startButton" type="button">
+            CLIQUE PARA ENTRAR
+        </button>
+    </div>
+
     <div class="header-wrap" id="headerWrap">
         <header class="topbar">
             <div class="brand-area">
@@ -105,6 +111,8 @@
     <audio id="bgMusic" src="conexãoprisma.mp3" loop preload="auto"></audio>
 
     <script>
+        const startScreen = document.getElementById("startScreen");
+        const startButton = document.getElementById("startButton");
         const headerWrap = document.getElementById("headerWrap");
         const buttons = document.querySelectorAll(".menu-image");
         const homeButton = document.getElementById("homeButton");
@@ -114,21 +122,29 @@
         const homeSound = document.getElementById("homeSound");
         const bgMusic = document.getElementById("bgMusic");
 
-        const volumeControl = document.getElementById("volumeControl");
         const volumeSlider = document.getElementById("volumeSlider");
         const volumeTrack = document.getElementById("volumeTrack");
+
+        const hero = document.querySelector(".hero");
+        const bgTree = document.getElementById("bgTree");
+        const leafLayer = document.getElementById("leafLayer");
+
+        const DROP_TIME = 14.582;
+        const INITIAL_VOLUME = 35;
+
+        let typingRun = 0;
+        let musicStarted = false;
+        let musicIndex = 0;
+        let textFrame = 0;
+        let leafTimer = 0;
+        let volumePercent = INITIAL_VOLUME;
+        let draggingVolume = false;
 
         selectSound.volume = 0.25;
         homeSound.volume = 0.25;
 
-        const homeMessage = [
-            { text: "Tá tão...", speed: 35, pauseAfter: 1000 },
-            {
-                text: " fri",
-                speed: 120,
-                effect: "cold",
-                startMusicAt: 1
-            },
+        const musicBlocks = [
+            { text: "fri", speed: 120, effect: "cold" },
             { text: "o", speed: 90, effect: "cold" },
             { text: ".\n\n", speed: 70, pauseAfter: 500 },
             { text: "...\n\n", speed: 330, pauseAfter: 1000 },
@@ -138,77 +154,180 @@
             { text: "Você quer vir comigo?", speed: 35 }
         ];
 
-        let typingRun = 0;
-        let musicRequested = false;
-        let musicPlayPromise = null;
-        let volumePercent = 35;
-        let draggingVolume = false;
+        function createMusicTimeline() {
+            const events = [];
+            let time = 0;
 
-        const wait = ms =>
-            new Promise(resolve => setTimeout(resolve, ms));
+            for (const block of musicBlocks) {
+                for (const char of block.text) {
+                    events.push({
+                        time,
+                        char,
+                        effect: block.effect || "normal"
+                    });
 
-        function play(sound) {
+                    time += block.speed || 45;
+                }
+
+                time += block.pauseAfter || 0;
+            }
+
+            const originalEnd = events[events.length - 1].time;
+            const scale = DROP_TIME * 1000 / originalEnd;
+
+            return events.map(event => ({
+                ...event,
+                time: event.time * scale
+            }));
+        }
+
+        const musicEvents = createMusicTimeline();
+
+        const wait = milliseconds =>
+            new Promise(resolve => setTimeout(resolve, milliseconds));
+
+        function appendCharacter(char, effect = "normal") {
+            if (char === "\n") {
+                typeText.appendChild(document.createElement("br"));
+                return;
+            }
+
+            const letter = document.createElement("span");
+
+            letter.className = `typed-letter ${effect}`;
+            letter.textContent = char === " " ? "\u00A0" : char;
+
+            typeText.appendChild(letter);
+        }
+
+        function playSound(sound) {
             sound.currentTime = 0;
             sound.play().catch(() => {});
         }
 
-        function tryStartMusic() {
-            if (!musicRequested || !bgMusic.paused || musicPlayPromise) return;
+        async function beginExperience() {
+            startButton.disabled = true;
+            bgMusic.currentTime = 0;
+            bgMusic.volume = 0;
 
-            musicPlayPromise = bgMusic.play()
-                .catch(() => {})
-                .finally(() => {
-                    musicPlayPromise = null;
-                });
+            try {
+                await bgMusic.play();
+
+                document.body.classList.add("started");
+                startScreen.classList.add("leaving");
+
+                setTimeout(() => {
+                    startScreen.remove();
+                }, 400);
+            } catch {
+                startButton.disabled = false;
+                startButton.textContent = "CLIQUE NOVAMENTE";
+            }
         }
 
-        function startMusicAndVolume() {
-            if (!musicRequested) {
-                musicRequested = true;
-                volumeControl.classList.add("visible");
+        startButton.addEventListener("click", beginExperience);
+
+        headerWrap.addEventListener("animationend", event => {
+            if (event.target !== headerWrap ||
+                event.animationName !== "headerDrop") return;
+
+            headerWrap.classList.add("ready");
+            setTimeout(startHomeSequence, 1000);
+        });
+
+        function stopCurrentSequence() {
+            typingRun++;
+            musicStarted = false;
+            musicIndex = 0;
+
+            cancelAnimationFrame(textFrame);
+            clearInterval(leafTimer);
+
+            document.body.classList.remove("music-live");
+            leafLayer.replaceChildren();
+
+            bgMusic.volume = 0;
+            bgMusic.currentTime = 0;
+        }
+
+        function startHomeSequence() {
+            stopCurrentSequence();
+
+            const currentRun = typingRun;
+
+            if (bgMusic.paused) {
+                bgMusic.play().catch(() => {});
             }
 
-            tryStartMusic();
+            typePrelude(currentRun);
         }
 
-        async function startTypewriter() {
-            const currentRun = ++typingRun;
+        async function typePrelude(currentRun) {
             typeText.innerHTML = "";
 
-            for (const block of homeMessage) {
+            for (const char of "Tá tão...") {
                 if (currentRun !== typingRun) return;
 
-                for (let index = 0; index < block.text.length; index++) {
-                    if (currentRun !== typingRun) return;
+                appendCharacter(char);
+                await wait(35);
+            }
 
-                    if (block.startMusicAt === index) {
-                        startMusicAndVolume();
-                    }
+            await wait(1000);
 
-                    const char = block.text[index];
+            if (currentRun !== typingRun) return;
 
-                    if (char === "\n") {
-                        typeText.appendChild(document.createElement("br"));
-                    } else {
-                        const letter = document.createElement("span");
+            appendCharacter(" ", "cold");
+            await wait(120);
 
-                        letter.className =
-                            `typed-letter ${block.effect || "normal"}`;
+            if (currentRun !== typingRun) return;
 
-                        letter.textContent =
-                            char === " " ? "\u00A0" : char;
+            startMusicSequence(currentRun);
+        }
 
-                        typeText.appendChild(letter);
-                    }
+        function startMusicSequence(currentRun) {
+            musicStarted = true;
+            musicIndex = 0;
 
-                    await wait(block.speed || 45);
-                }
+            bgMusic.currentTime = 0;
+            bgMusic.volume = volumePercent / 100;
 
-                if (block.pauseAfter) {
-                    await wait(block.pauseAfter);
-                }
+            document.body.classList.add("music-live");
+
+            dropLeaf();
+            leafTimer = setInterval(dropLeaf, 3500);
+
+            renderMusicText(currentRun);
+        }
+
+        function renderMusicText(currentRun) {
+            if (!musicStarted || currentRun !== typingRun) return;
+
+            const elapsed = bgMusic.currentTime * 1000;
+
+            while (
+                musicIndex < musicEvents.length &&
+                musicEvents[musicIndex].time <= elapsed
+            ) {
+                const event = musicEvents[musicIndex];
+
+                appendCharacter(event.char, event.effect);
+                musicIndex++;
+            }
+
+            if (musicIndex < musicEvents.length) {
+                textFrame = requestAnimationFrame(() => {
+                    renderMusicText(currentRun);
+                });
             }
         }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden || !musicStarted) return;
+
+            cancelAnimationFrame(textFrame);
+            renderMusicText(typingRun);
+            dropLeaf();
+        });
 
         function resetButtons() {
             buttons.forEach(button => {
@@ -217,19 +336,11 @@
             });
         }
 
-        headerWrap.addEventListener("animationend", event => {
-            if (event.target !== headerWrap ||
-                event.animationName !== "headerDrop") return;
-
-            headerWrap.classList.add("ready");
-            setTimeout(startTypewriter, 1000);
-        });
-
         buttons.forEach(button => {
             button.addEventListener("click", event => {
                 event.preventDefault();
 
-                play(selectSound);
+                playSound(selectSound);
                 resetButtons();
 
                 button.classList.add("active");
@@ -240,9 +351,9 @@
         homeButton.addEventListener("click", event => {
             event.preventDefault();
 
-            play(homeSound);
+            playSound(homeSound);
             resetButtons();
-            startTypewriter();
+            startHomeSequence();
         });
 
         function setVolume(value) {
@@ -251,16 +362,20 @@
                 Math.min(100, Math.round(value))
             );
 
-            bgMusic.volume = volumePercent / 100;
+            if (musicStarted) {
+                bgMusic.volume = volumePercent / 100;
+            }
+
+            const position = volumePercent * 2;
 
             volumeSlider.style.setProperty(
                 "--fill-width",
-                `${volumePercent}px`
+                `${position}px`
             );
 
             volumeSlider.style.setProperty(
                 "--knob-left",
-                `${volumePercent + 3}px`
+                `${position + 6}px`
             );
 
             volumeSlider.setAttribute(
@@ -273,18 +388,16 @@
                 `${volumePercent}%`
             );
 
-            volumeSlider.title =
-                `Volume: ${volumePercent}%`;
+            volumeSlider.title = `Volume: ${volumePercent}%`;
         }
 
         function setVolumeFromPointer(event) {
-            const trackRect = volumeTrack.getBoundingClientRect();
+            const rect = volumeTrack.getBoundingClientRect();
 
-            const position =
-                (event.clientX - trackRect.left) /
-                trackRect.width;
-
-            setVolume(position * 100);
+            setVolume(
+                (event.clientX - rect.left) /
+                rect.width * 100
+            );
         }
 
         volumeSlider.addEventListener("pointerdown", event => {
@@ -295,7 +408,6 @@
             volumeSlider.setPointerCapture(event.pointerId);
 
             setVolumeFromPointer(event);
-            tryStartMusic();
         });
 
         volumeSlider.addEventListener("pointermove", event => {
@@ -318,20 +430,20 @@
         volumeSlider.addEventListener("pointercancel", stopVolumeDrag);
 
         volumeSlider.addEventListener("keydown", event => {
-            let nextVolume = volumePercent;
+            let value = volumePercent;
 
             if (event.key === "ArrowRight" ||
                 event.key === "ArrowUp") {
-                nextVolume++;
+                value++;
             } else if (
                 event.key === "ArrowLeft" ||
                 event.key === "ArrowDown"
             ) {
-                nextVolume--;
+                value--;
             } else if (event.key === "Home") {
-                nextVolume = 0;
+                value = 0;
             } else if (event.key === "End") {
-                nextVolume = 100;
+                value = 100;
             } else {
                 return;
             }
@@ -339,8 +451,7 @@
             event.preventDefault();
 
             volumeSlider.classList.add("is-active");
-            setVolume(nextVolume);
-            tryStartMusic();
+            setVolume(value);
         });
 
         volumeSlider.addEventListener("keyup", () => {
@@ -351,22 +462,15 @@
             volumeSlider.classList.remove("is-active");
         });
 
-        document.addEventListener("pointerdown", tryStartMusic);
-        document.addEventListener("keydown", tryStartMusic);
+        const randomBetween = (minimum, maximum) =>
+            Math.random() * (maximum - minimum) + minimum;
 
-        setVolume(volumePercent);
-
-        const hero = document.querySelector(".hero");
-        const bgTree = document.getElementById("bgTree");
-        const leafLayer = document.getElementById("leafLayer");
-
-        const randomBetween = (min, max) =>
-            Math.random() * (max - min) + min;
-
-        const clamp = (value, min, max) =>
-            Math.max(min, Math.min(max, value));
+        const clamp = (value, minimum, maximum) =>
+            Math.max(minimum, Math.min(maximum, value));
 
         function dropLeaf() {
+            if (!musicStarted || document.hidden) return;
+
             const heroRect = hero.getBoundingClientRect();
             const treeRect = bgTree.getBoundingClientRect();
 
@@ -439,7 +543,7 @@
             animation.onfinish = () => leaf.remove();
         }
 
-        setInterval(dropLeaf, 3500);
+        setVolume(INITIAL_VOLUME);
     </script>
 </body>
 </html>
