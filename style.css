@@ -228,3 +228,110 @@ body {
     background-clip: text;
     color: transparent;
 }
+
+/* Controle de volume: esta seção pode ser movida ou removida depois. */
+
+.volume-control {
+    position: absolute;
+    left: 50%;
+    top: 28px;
+    z-index: 3;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+.volume-control.visible {
+    visibility: visible;
+    pointer-events: auto;
+    animation: volumeFadeIn .45s linear forwards;
+}
+
+@keyframes volumeFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.volume-slider {
+    --fill-width: 35px;
+    --knob-left: 38px;
+
+    position: relative;
+    width: 106px;
+    height: 6px;
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+}
+
+.volume-track {
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    width: 100px;
+    height: 4px;
+}
+
+.volume-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 100px;
+    height: 4px;
+    object-fit: fill;
+    pointer-events: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.volume-fill-mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--fill-width);
+    height: 4px;
+    overflow: hidden;
+}
+
+.volume-fill-mask .volume-bar {
+    width: 100px;
+    max-width: none;
+}
+
+.volume-knob {
+    position: absolute;
+    left: var(--knob-left);
+    top: 0;
+    display: block;
+    width: 6px;
+    height: 6px;
+    object-fit: fill;
+    transform: translateX(-50%);
+    pointer-events: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.volume-selected {
+    opacity: 0;
+}
+
+.volume-slider.is-active .volume-normal {
+    opacity: 0;
+}
+
+.volume-slider.is-active .volume-selected {
+    opacity: 1;
+}
+
+.volume-slider:focus-visible {
+    outline: 1px solid #fff;
+    outline-offset: 4px;
+}
