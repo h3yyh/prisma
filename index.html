@@ -23,19 +23,22 @@
             </div>
 
             <nav class="menu" aria-label="Menu principal">
-                <a href="#" class="menu-image personagens"
+                <a href="#"
+                   class="menu-image personagens"
                    data-normal="personagens.png?v=2"
                    data-active="personagens-active.png?v=2">
                     <img src="personagens.png?v=2" alt="Personagens">
                 </a>
 
-                <a href="#" class="menu-image campanhas"
+                <a href="#"
+                   class="menu-image campanhas"
                    data-normal="campanhas.png?v=2"
                    data-active="campanhas-active.png?v=2">
                     <img src="campanhas.png?v=2" alt="Campanhas">
                 </a>
 
-                <a href="#" class="menu-image sistema"
+                <a href="#"
+                   class="menu-image sistema"
                    data-normal="sistema.png?v=2"
                    data-active="sistema-active.png?v=2">
                     <img src="sistema.png?v=2" alt="Sistema">
@@ -117,7 +120,10 @@
                  aria-modal="true"
                  aria-labelledby="profileTitle">
 
-            <button class="profile-close" id="profileClose" type="button" aria-label="Fechar perfil">
+            <button class="profile-close"
+                    id="profileClose"
+                    type="button"
+                    aria-label="Fechar perfil">
                 X
             </button>
 
@@ -178,6 +184,7 @@
         let typingRun = 0;
         let musicStarted = false;
         let musicIndex = 0;
+        let musicClockStart = 0;
         let textFrame = 0;
         let leafTimer = 0;
         let volumePercent = INITIAL_VOLUME;
@@ -189,7 +196,8 @@
         openSound.volume = 0.35;
 
         const musicBlocks = [
-            { text: "frio", speed: 130, effect: "cold" },
+            { text: "fri", speed: 260, effect: "cold" },
+            { text: "o", speed: 190, effect: "cold" },
             { text: ".\n\n", speed: 70, pauseAfter: 500 },
             { text: "...\n\n", speed: 330, pauseAfter: 1000 },
             { text: "Já já vai começar de novo.\n\n", speed: 35, pauseAfter: 700 },
@@ -237,6 +245,7 @@
             }
 
             const letter = document.createElement("span");
+
             letter.className = `typed-letter ${effect}`;
             letter.textContent = char === " " ? "\u00A0" : char;
 
@@ -249,13 +258,19 @@
         }
 
         async function beginExperience() {
-            startButton.disabled = true;
+            if (document.body.classList.contains("started")) return;
 
+            startButton.disabled = true;
             playSound(openSound);
 
-            bgMusic.currentTime = 0;
             bgMusic.volume = 0;
-            bgMusic.play().catch(() => {});
+            bgMusic.currentTime = 0;
+
+            try {
+                await bgMusic.play();
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            } catch {}
 
             document.body.classList.add("started");
             startScreen.classList.add("leaving");
@@ -268,8 +283,12 @@
         startButton.addEventListener("click", beginExperience);
 
         headerWrap.addEventListener("animationend", event => {
-            if (event.target !== headerWrap ||
-                event.animationName !== "headerDrop") return;
+            if (
+                event.target !== headerWrap ||
+                event.animationName !== "headerDrop"
+            ) {
+                return;
+            }
 
             headerWrap.classList.add("ready");
             setTimeout(startHomeSequence, 1000);
@@ -279,6 +298,7 @@
             typingRun++;
             musicStarted = false;
             musicIndex = 0;
+            musicClockStart = 0;
 
             cancelAnimationFrame(textFrame);
             clearInterval(leafTimer);
@@ -286,18 +306,18 @@
             document.body.classList.remove("music-live");
             leafLayer.replaceChildren();
 
+            bgMusic.pause();
             bgMusic.volume = 0;
+
+            try {
+                bgMusic.currentTime = 0;
+            } catch {}
         }
 
         function startHomeSequence() {
             stopCurrentSequence();
 
             const currentRun = typingRun;
-
-            if (bgMusic.paused) {
-                bgMusic.play().catch(() => {});
-            }
-
             typePrelude(currentRun);
         }
 
@@ -320,43 +340,69 @@
 
             if (currentRun !== typingRun) return;
 
-            await startMusicSequence(currentRun);
+            startMusicSequence(currentRun);
         }
 
-        function rewindMusic() {
+        function waitForMusicEvent(eventName, timeout = 700) {
             return new Promise(resolve => {
                 let finished = false;
+                let timer;
 
                 function finish() {
                     if (finished) return;
 
                     finished = true;
-                    bgMusic.removeEventListener("seeked", finish);
+                    clearTimeout(timer);
+                    bgMusic.removeEventListener(eventName, finish);
                     resolve();
                 }
 
-                bgMusic.addEventListener("seeked", finish, { once: true });
-                bgMusic.currentTime = 0;
+                bgMusic.addEventListener(eventName, finish, {
+                    once: true
+                });
 
-                setTimeout(finish, 250);
+                timer = setTimeout(finish, timeout);
             });
         }
 
-        async function startMusicSequence(currentRun) {
+        async function prepareMusicAtStart() {
+            bgMusic.pause();
             bgMusic.volume = 0;
 
-            if (bgMusic.paused) {
-                bgMusic.play().catch(() => {});
+            if (bgMusic.readyState < 1) {
+                await waitForMusicEvent("loadedmetadata", 1200);
             }
 
-            await rewindMusic();
+            try {
+                bgMusic.currentTime = 0;
+            } catch {}
+
+            if (bgMusic.seeking) {
+                await waitForMusicEvent("seeked");
+            }
+        }
+
+        async function startMusicSequence(currentRun) {
+            await prepareMusicAtStart();
 
             if (currentRun !== typingRun) return;
 
+            bgMusic.volume = volumePercent / 100;
+
+            try {
+                await bgMusic.play();
+            } catch {
+                return;
+            }
+
+            if (currentRun !== typingRun) {
+                bgMusic.pause();
+                return;
+            }
+
             musicStarted = true;
             musicIndex = 0;
-
-            bgMusic.volume = volumePercent / 100;
+            musicClockStart = bgMusic.currentTime;
 
             document.body.classList.add("music-live");
 
@@ -369,7 +415,8 @@
         function renderMusicText(currentRun) {
             if (!musicStarted || currentRun !== typingRun) return;
 
-            const elapsed = bgMusic.currentTime * 1000;
+            const elapsed =
+                (bgMusic.currentTime - musicClockStart) * 1000;
 
             while (
                 musicIndex < musicEvents.length &&
@@ -458,8 +505,10 @@
         });
 
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape" &&
-                profileOverlay.classList.contains("open")) {
+            if (
+                event.key === "Escape" &&
+                profileOverlay.classList.contains("open")
+            ) {
                 closeProfile();
             }
         });
@@ -520,6 +569,7 @@
 
         volumeSlider.addEventListener("pointermove", event => {
             if (!draggingVolume) return;
+
             setVolumeFromPointer(event);
         });
 
@@ -540,8 +590,10 @@
         volumeSlider.addEventListener("keydown", event => {
             let value = volumePercent;
 
-            if (event.key === "ArrowRight" ||
-                event.key === "ArrowUp") {
+            if (
+                event.key === "ArrowRight" ||
+                event.key === "ArrowUp"
+            ) {
                 value++;
             } else if (
                 event.key === "ArrowLeft" ||
