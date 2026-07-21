@@ -9,7 +9,8 @@
     box-sizing:border-box;
 }
 
-html,body{
+html,
+body{
     min-height:100%;
 }
 
@@ -256,7 +257,7 @@ body.started .header-wrap{
     inset:0;
     overflow:hidden;
     pointer-events:none;
-    contain:paint;
+    contain:layout paint;
 }
 
 .sky-leaf-layer{
@@ -277,10 +278,10 @@ body.started .header-wrap{
 
 .bg-tree{
     position:absolute;
-    right:70px;
+    right:105px;
     bottom:0;
     z-index:1;
-    width:274px;
+    width:518px;
     height:auto;
     opacity:0;
     pointer-events:none;
@@ -292,7 +293,7 @@ body.drop-live .bg-tree{
 }
 
 .tree-falling-leaf{
-    width:27px;
+    width:50px;
     opacity:0;
 }
 
@@ -338,7 +339,12 @@ body.drop-live .typed-line{
 
 .typed-letter.cold{
     color:transparent;
-    background:linear-gradient(180deg,#fff,#a7dcff,#4d8dff);
+    background:linear-gradient(
+        180deg,
+        #fff,
+        #a7dcff,
+        #4d8dff
+    );
     background-clip:text;
     -webkit-background-clip:text;
 }
@@ -354,7 +360,9 @@ body.drop-live .typed-line{
     opacity:0;
     visibility:hidden;
     pointer-events:none;
-    transition:opacity .16s linear,visibility .16s linear;
+    transition:
+        opacity .16s linear,
+        visibility .16s linear;
 }
 
 .profile-overlay.open{
@@ -371,7 +379,9 @@ body.drop-live .typed-line{
     background:#000;
     color:#fff;
     font-family:"Determination",monospace;
-    box-shadow:0 0 0 3px #000,0 0 0 5px #fff;
+    box-shadow:
+        0 0 0 3px #000,
+        0 0 0 5px #fff;
 }
 
 .profile-panel h2{
@@ -463,6 +473,7 @@ body.drop-live .typed-line{
 .volume-slider{
     --fill-width:70px;
     --knob-left:76px;
+
     position:relative;
     width:212px;
     height:12px;
@@ -546,6 +557,15 @@ body.drop-live .typed-line{
     .menu-image img{
         height:36px;
     }
+
+    .bg-tree{
+        right:55px;
+        width:440px;
+    }
+
+    .tree-falling-leaf{
+        width:43px;
+    }
 }
 
 @media(max-width:760px){
@@ -572,8 +592,12 @@ body.drop-live .typed-line{
     }
 
     .bg-tree{
-        right:12px;
-        width:220px;
+        right:18px;
+        width:min(350px,88vw);
+    }
+
+    .tree-falling-leaf{
+        width:35px;
     }
 
     .home-text h1{
