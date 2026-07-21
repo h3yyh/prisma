@@ -305,17 +305,11 @@ body.drop-live .bg-tree{
     position:absolute;
     left:28px;
     right:28px;
-    top:50%;
-    transform:translateY(-50%);
+    top:24px;
     font-size:20px;
     font-weight:normal;
     letter-spacing:1px;
     line-height:1.35;
-}
-
-body.drop-live .home-text h1{
-    top:24px;
-    transform:none;
 }
 
 .typed-line{
@@ -606,11 +600,8 @@ body.drop-live .typed-line{
     .home-text h1{
         left:18px;
         right:18px;
-        font-size:18px;
-    }
-
-    body.drop-live .home-text h1{
         top:20px;
+        font-size:18px;
     }
 
     .profile-volume{
