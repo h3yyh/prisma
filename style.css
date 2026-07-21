@@ -273,6 +273,7 @@ body.started .header-wrap{
     display:block;
     height:auto;
     pointer-events:none;
+    will-change:transform;
 }
 
 .bg-tree{
