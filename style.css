@@ -75,8 +75,6 @@ body.profile-open{
     display:block;
     width:min(460px,80vw);
     height:auto;
-    image-rendering:pixelated;
-    image-rendering:crisp-edges;
 }
 
 .header-wrap{
@@ -145,6 +143,12 @@ body.started .header-wrap{
     display:inline-flex;
 }
 
+.brand-logo img{
+    display:block;
+    height:42px;
+    pointer-events:none;
+}
+
 .brand-logo img,
 .menu-image img,
 .profile-photo,
@@ -153,15 +157,10 @@ body.started .header-wrap{
 .tree-falling-leaf,
 .bg-tree,
 .volume-bar,
-.volume-knob{
+.volume-knob,
+.start-logo-button img{
     image-rendering:pixelated;
     image-rendering:crisp-edges;
-}
-
-.brand-logo img{
-    display:block;
-    height:42px;
-    pointer-events:none;
 }
 
 .menu{
