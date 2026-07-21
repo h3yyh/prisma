@@ -1,1 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISMA</title>
+    <link rel="icon" type="image/png" href="PRISMA.png?v=1">
+    <link rel="stylesheet" href="style.css?v=22">
+</head>
+<body>
+    <div class="start-screen" id="startScreen">
+        <button class="start-logo-button" id="startButton" type="button" aria-label="Entrar no Prisma">
+            <img src="prisma-logo.png" alt="PRISMA">
+        </button>
+    </div>
 
+    <div class="header-wrap" id="headerWrap">
+        <header class="topbar">
+            <div class="brand-area">
+                <a href="#" class="brand-logo" id="homeButton" aria-label="Voltar ao início">
+                    <img src="prisma-logo.png" alt="PRISMA">
+                </a>
+            </div>
+
+            <nav class="menu" aria-label="Menu principal">
+                <a href="#" class="menu-image personagens" data-normal="personagens.png?v=2" data-active="personagens-active.png?v=2">
+                    <img src="personagens.png?v=2" alt="Personagens">
+                </a>
+
+                <a href="#" class="menu-image campanhas" data-normal="campanhas.png?v=2" data-active="campanhas-active.png?v=2">
+                    <img src="campanhas.png?v=2" alt="Campanhas">
+                </a>
+
+                <a href="#" class="menu-image sistema" data-normal="sistema.png?v=2" data-active="sistema-active.png?v=2">
+                    <img src="sistema.png?v=2" alt="Sistema">
+                </a>
+            </nav>
+
+            <button class="profile" id="profileButton" type="button" aria-label="Abrir perfil" aria-controls="profileOverlay" aria-expanded="false">
+                <img class="profile-photo" src="perfilfotoprisma.png?v=1" alt="">
+                <img class="profile-frame" src="perfilprisma.png?v=1" alt="">
+            </button>
+        </header>
+
+        <div class="line"></div>
+    </div>
+
+    <main class="hero">
+        <div class="sky-leaf-layer" id="skyLeafLayer"></div>
+
+        <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
+
+        <section class="home-text">
+            <h1 id="typeText"></h1>
+        </section>
+    </main>
+
+    <div class="profile-overlay" id="profileOverlay" aria-hidden="true">
+        <section class="profile-panel" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+            <button class="profile-close" id="profileClose" type="button" aria-label="Fechar perfil">X</button>
+
+            <h2 id="profileTitle">PERFIL</h2>
+
+            <div class="profile-panel-user">
+                <div class="profile-panel-avatar">
+                    <img class="profile-photo" src="perfilfotoprisma.png?v=1" alt="">
+                    <img class="profile-frame" src="perfilprisma.png?v=1" alt="">
+                </div>
+
+                <div>
+                    <h3>USUÁRIO</h3>
+                    <p>Este espaço poderá mostrar o nome e a descrição do perfil.</p>
+                </div>
+            </div>
+
+            <div class="profile-panel-info">
+                <p><span>STATUS</span> EM DESENVOLVIMENTO</p>
+                <p><span>CAMPANHAS</span> 0</p>
+                <p><span>PERSONAGENS</span> 0</p>
+            </div>
+
+            <div class="profile-volume">
+                <div class="profile-volume-label">
+                    <span>VOLUME</span>
+                    <output id="volumeValue">35%</output>
+                </div>
+
+                <div
+                    class="volume-slider"
+                    id="volumeSlider"
+                    role="slider"
+                    tabindex="0"
+                    aria-label="Volume da música"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="35"
+                >
+                    <div class="volume-track" id="volumeTrack">
+                        <img
+                            class="volume-bar volume-normal"
+                            src="abaixarvolumep.png"
+                            alt=""
+                            draggable="false"
+                        >
+
+                        <img
+                            class="volume-bar volume-selected"
+                            src="abaixarvolume-select.png"
+                            alt=""
+                            draggable="false"
+                        >
+
+                        <div class="volume-fill-mask">
+                            <img
+                                class="volume-bar volume-normal"
+                                src="aumentarvolumep.png"
+                                alt=""
+                                draggable="false"
+                            >
+
+                            <img
+                                class="volume-bar volume-selected"
+                                src="aumentarvolume-select.png"
+                                alt=""
+                                draggable="false"
+                            >
+                        </div>
+                    </div>
+
+                    <img
+                        class="volume-knob volume-normal"
+                        src="botãovolume.png"
+                        alt=""
+                        draggable="false"
+                    >
+
+                    <img
+                        class="volume-knob volume-selected"
+                        src="botãovolume-select.png"
+                        alt=""
+                        draggable="false"
+                    >
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <audio id="selectSound" src="sndselectundertale.mp3"></audio>
+    <audio id="homeSound" src="snd_saveprisma.mp3"></audio>
+    <audio id="openSound" src="prismabrindo.mp3"></audio>
+    <audio id="bgMusic" src="conexãoprisma.mp3" loop preload="auto"></audio>
+
+    <script>
+        const startScreen = document.getElementById("startScreen");
+        const startButton = document.getElementById("startButton");
+        const headerWrap = document.getElementById("headerWrap");
+        const buttons = document.querySelectorAll(".menu-image");
+        const homeButton = document.getElementById("homeButton");
+        const typeText = document.getElementById("typeText");
+        const profileButton = document.getElementById("profileButton");
+        const profileOverlay = document.getElementById("profileOverlay");
+        const profileClose = document.getElementById("profileClose");
+        const selectSound = document.getElementById("selectSound");
+        const homeSound = document.getElementById("homeSound");
+        const openSound = document.getElementById("openSound");
+        const bgMusic = document.getElementById("bgMusic");
+        const volumeSlider = document.getElementById("volumeSlider");
+        const volumeTrack = document.getElementById("volumeTrack");
+        const volumeValue = document.getElementById("volumeValue");
+        const hero = document.querySelector(".hero");
+        const skyLeafLayer = document.getElementById("skyLeafLayer");
+
+        const DROP_TIME = 14.582;
+        const INITIAL_VOLUME = 35;
+
+        const leafSprites = [
+            "folha1.png",
+            "folha2.png",
+            "folha3.png",
+            "folha4.png"
+        ];
+
+        let typingRun = 0;
+        let musicStarted = false;
+        let musicIndex = 0;
+        let musicClockStart = 0;
+        let textFrame = 0;
+        let skyLeafTimer = 0;
+        let volumePercent = INITIAL_VOLUME;
+        let draggingVolume = false;
+        let lastFocusedElement = null;
+
+        selectSound.volume = 0.25;
+        homeSound.volume = 0.25;
+        openSound.volume = 0.35;
+
+        const musicBlocks = [
+            { text: "fri", speed: 150, effect: "cold" },
+            { text: "o", speed: 110, effect: "cold" },
+            { text: ".\n\n", speed: 70, pauseAfter: 500 },
+            { text: "...\n\n", speed: 330, pauseAfter: 1000 },
+            {
+                text: "Já já vai começar de novo.\n\n",
+                speed: 35,
+                pauseAfter: 700
+            },
+            { text: "...\n\n", speed: 330, pauseAfter: 1000 },
+            {
+                text: "Eu vou pegar um casaco.\n\n",
+                speed: 35,
+                pauseAfter: 400
+            },
+            { text: "Você quer vir comigo?", speed: 35 }
+        ];
+
+        function createMusicTimeline() {
+            const events = [];
+            let time = 0;
+
+            for (const block of musicBlocks) {
+                for (const char of block.text) {
+                    events.push({
+                        time,
+                        char,
+                        effect: block.effect || "normal"
+                    });
+
+                    time += block.speed || 45;
+                }
+
+                time += block.pauseAfter || 0;
+            }
+
+            const originalEnd = events[events.length - 1].time;
+            const scale = DROP_TIME * 1000 / originalEnd;
+
+            return events.map(event => ({
+                ...event,
+                time: event.time * scale
+            }));
+        }
+
+        const musicEvents = createMusicTimeline();
+
+        const wait = milliseconds =>
+            new Promise(resolve => setTimeout(resolve, milliseconds));
+
+        const randomBetween = (minimum, maximum) =>
+            Math.random() * (maximum - minimum) + minimum;
+
+        function appendCharacter(char, effect = "normal") {
+            if (char === "\n") {
+                typeText.appendChild(document.createElement("br"));
+                return;
+            }
+
+            const letter = document.createElement("span");
+
+            letter.className = `typed-letter ${effect}`;
+            letter.textContent = char === " " ? "\u00A0" : char;
+
+            typeText.appendChild(letter);
+        }
+
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+
+        async function beginExperience() {
+            if (document.body.classList.contains("started")) return;
+
+            startButton.disabled = true;
+            playSound(openSound);
+
+            bgMusic.volume = 0;
+            bgMusic.currentTime = 0;
+
+            try {
+                await bgMusic.play();
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            } catch {}
+
+            document.body.classList.add("started");
+            startScreen.classList.add("leaving");
+
+            setTimeout(() => {
+                startScreen.remove();
+            }, 400);
+        }
+
+        startButton.addEventListener("click", beginExperience);
+
+        headerWrap.addEventListener("animationend", event => {
+            if (
+                event.target !== headerWrap ||
+                event.animationName !== "headerDrop"
+            ) {
+                return;
+            }
+
+            headerWrap.classList.add("ready");
+            setTimeout(startHomeSequence, 1000);
+        });
+
+        function stopCurrentSequence() {
+            typingRun++;
+            musicStarted = false;
+            musicIndex = 0;
+            musicClockStart = 0;
+
+            cancelAnimationFrame(textFrame);
+            clearInterval(skyLeafTimer);
+
+            document.body.classList.remove("music-live");
+            skyLeafLayer.replaceChildren();
+
+            bgMusic.pause();
+            bgMusic.volume = 0;
+
+            try {
+                bgMusic.currentTime = 0;
+            } catch {}
+        }
+
+        function startHomeSequence() {
+            stopCurrentSequence();
+
+            const currentRun = typingRun;
+
+            typePrelude(currentRun);
+        }
+
+        async function typePrelude(currentRun) {
+            typeText.innerHTML = "";
+
+            for (const char of "Tá tão...") {
+                if (currentRun !== typingRun) return;
+
+                appendCharacter(char);
+                await wait(35);
+            }
+
+            await wait(1000);
+
+            if (currentRun !== typingRun) return;
+
+            appendCharacter(" ");
+            await wait(120);
+
+            if (currentRun !== typingRun) return;
+
+            startMusicSequence(currentRun);
+        }
+
+        function waitForMusicEvent(eventName, timeout = 700) {
+            return new Promise(resolve => {
+                let finished = false;
+                let timer;
+
+                function finish() {
+                    if (finished) return;
+
+                    finished = true;
+
+                    clearTimeout(timer);
+                    bgMusic.removeEventListener(eventName, finish);
+
+                    resolve();
+                }
+
+                bgMusic.addEventListener(eventName, finish, {
+                    once: true
+                });
+
+                timer = setTimeout(finish, timeout);
+            });
+        }
+
+        async function prepareMusicAtStart() {
+            bgMusic.pause();
+            bgMusic.volume = 0;
+
+            if (bgMusic.readyState < 1) {
+                await waitForMusicEvent("loadedmetadata", 1200);
+            }
+
+            try {
+                bgMusic.currentTime = 0;
+            } catch {}
+
+            if (bgMusic.seeking) {
+                await waitForMusicEvent("seeked");
+            }
+        }
+
+        async function startMusicSequence(currentRun) {
+            await prepareMusicAtStart();
+
+            if (currentRun !== typingRun) return;
+
+            bgMusic.volume = volumePercent / 100;
+
+            try {
+                await bgMusic.play();
+            } catch {
+                return;
+            }
+
+            if (currentRun !== typingRun) {
+                bgMusic.pause();
+                return;
+            }
+
+            musicStarted = true;
+            musicIndex = 0;
+            musicClockStart = bgMusic.currentTime;
+
+            document.body.classList.add("music-live");
+
+            startSkyLeaves();
+            renderMusicText(currentRun);
+        }
+
+        function renderMusicText(currentRun) {
+            if (!musicStarted || currentRun !== typingRun) return;
+
+            const elapsed =
+                (bgMusic.currentTime - musicClockStart) * 1000;
+
+            while (
+                musicIndex < musicEvents.length &&
+                musicEvents[musicIndex].time <= elapsed
+            ) {
+                const event = musicEvents[musicIndex];
+
+                appendCharacter(event.char, event.effect);
+
+                musicIndex++;
+            }
+
+            if (musicIndex < musicEvents.length) {
+                textFrame = requestAnimationFrame(() => {
+                    renderMusicText(currentRun);
+                });
+            }
+        }
+
+        function createSkyLeaf() {
+            if (!musicStarted || document.hidden) return;
+
+            const leaf = document.createElement("img");
+
+            const size = randomBetween(28, 52);
+
+            const startX = randomBetween(
+                -size * 0.4,
+                Math.max(1, hero.clientWidth - size * 0.6)
+            );
+
+            const fallDistance =
+                hero.clientHeight + size + randomBetween(50, 150);
+
+            const drift = randomBetween(-150, 150);
+            const sway = randomBetween(25, 75);
+            const startRotation = randomBetween(-35, 35);
+
+            const rotationDirection =
+                Math.random() < 0.5 ? -1 : 1;
+
+            const finalRotation =
+                startRotation +
+                randomBetween(260, 760) * rotationDirection;
+
+            const opacity = randomBetween(0.62, 0.92);
+
+            leaf.className = "sky-leaf";
+
+            leaf.src =
+                leafSprites[
+                    Math.floor(Math.random() * leafSprites.length)
+                ];
+
+            leaf.alt = "";
+            leaf.style.width = `${size}px`;
+            leaf.style.left = `${startX}px`;
+            leaf.style.top = `${-size - randomBetween(4, 70)}px`;
+
+            skyLeafLayer.appendChild(leaf);
+
+            const animation = leaf.animate(
+                [
+                    {
+                        opacity: 0,
+                        transform:
+                            `translate(0, 0) rotate(${startRotation}deg)`,
+                        offset: 0
+                    },
+                    {
+                        opacity,
+                        transform:
+                            `translate(${sway}px, ${fallDistance * 0.22}px) rotate(${startRotation + 90}deg)`,
+                        offset: 0.22
+                    },
+                    {
+                        opacity,
+                        transform:
+                            `translate(${-sway * 0.35}px, ${fallDistance * 0.48}px) rotate(${startRotation + 210}deg)`,
+                        offset: 0.48
+                    },
+                    {
+                        opacity,
+                        transform:
+                            `translate(${drift * 0.72}px, ${fallDistance * 0.76}px) rotate(${finalRotation * 0.76}deg)`,
+                        offset: 0.76
+                    },
+                    {
+                        opacity: 0,
+                        transform:
+                            `translate(${drift}px, ${fallDistance}px) rotate(${finalRotation}deg)`,
+                        offset: 1
+                    }
+                ],
+                {
+                    duration: randomBetween(8500, 14500),
+                    easing: "linear",
+                    fill: "forwards"
+                }
+            );
+
+            animation.onfinish = () => {
+                leaf.remove();
+            };
+        }
+
+        function startSkyLeaves() {
+            clearInterval(skyLeafTimer);
+
+            for (let index = 0; index < 5; index++) {
+                setTimeout(createSkyLeaf, index * 220);
+            }
+
+            skyLeafTimer = setInterval(() => {
+                createSkyLeaf();
+
+                if (Math.random() < 0.32) {
+                    setTimeout(
+                        createSkyLeaf,
+                        randomBetween(120, 360)
+                    );
+                }
+            }, 900);
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden || !musicStarted) return;
+
+            cancelAnimationFrame(textFrame);
+
+            renderMusicText(typingRun);
+            createSkyLeaf();
+
+            setTimeout(createSkyLeaf, 180);
+        });
+
+        function resetButtons() {
+            buttons.forEach(button => {
+                button.classList.remove("active");
+                button.querySelector("img").src =
+                    button.dataset.normal;
+            });
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener("click", event => {
+                event.preventDefault();
+
+                playSound(selectSound);
+                resetButtons();
+
+                button.classList.add("active");
+                button.querySelector("img").src =
+                    button.dataset.active;
+            });
+        });
+
+        homeButton.addEventListener("click", event => {
+            event.preventDefault();
+
+            playSound(homeSound);
+            resetButtons();
+            startHomeSequence();
+        });
+
+        function openProfile() {
+            lastFocusedElement = document.activeElement;
+
+            playSound(selectSound);
+
+            profileOverlay.classList.add("open");
+            profileOverlay.setAttribute("aria-hidden", "false");
+            profileButton.setAttribute("aria-expanded", "true");
+
+            document.body.classList.add("profile-open");
+
+            profileClose.focus();
+        }
+
+        function closeProfile() {
+            profileOverlay.classList.remove("open");
+            profileOverlay.setAttribute("aria-hidden", "true");
+            profileButton.setAttribute("aria-expanded", "false");
+
+            document.body.classList.remove("profile-open");
+
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+            }
+        }
+
+        profileButton.addEventListener("click", openProfile);
+        profileClose.addEventListener("click", closeProfile);
+
+        profileOverlay.addEventListener("click", event => {
+            if (event.target === profileOverlay) {
+                closeProfile();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (
+                event.key === "Escape" &&
+                profileOverlay.classList.contains("open")
+            ) {
+                closeProfile();
+            }
+        });
+
+        function setVolume(value) {
+            volumePercent = Math.max(
+                0,
+                Math.min(100, Math.round(value))
+            );
+
+            if (musicStarted) {
+                bgMusic.volume = volumePercent / 100;
+            }
+
+            const position = volumePercent * 2;
+
+            volumeSlider.style.setProperty(
+                "--fill-width",
+                `${position}px`
+            );
+
+            volumeSlider.style.setProperty(
+                "--knob-left",
+                `${position + 6}px`
+            );
+
+            volumeSlider.setAttribute(
+                "aria-valuenow",
+                volumePercent
+            );
+
+            volumeSlider.setAttribute(
+                "aria-valuetext",
+                `${volumePercent}%`
+            );
+
+            volumeSlider.title =
+                `Volume: ${volumePercent}%`;
+
+            volumeValue.textContent =
+                `${volumePercent}%`;
+        }
+
+        function setVolumeFromPointer(event) {
+            const rect =
+                volumeTrack.getBoundingClientRect();
+
+            setVolume(
+                (event.clientX - rect.left) /
+                rect.width *
+                100
+            );
+        }
+
+        volumeSlider.addEventListener(
+            "pointerdown",
+            event => {
+                event.preventDefault();
+
+                draggingVolume = true;
+
+                volumeSlider.classList.add("is-active");
+
+                volumeSlider.setPointerCapture(
+                    event.pointerId
+                );
+
+                setVolumeFromPointer(event);
+            }
+        );
+
+        volumeSlider.addEventListener(
+            "pointermove",
+            event => {
+                if (draggingVolume) {
+                    setVolumeFromPointer(event);
+                }
+            }
+        );
+
+        function stopVolumeDrag(event) {
+            if (!draggingVolume) return;
+
+            draggingVolume = false;
+
+            volumeSlider.classList.remove("is-active");
+
+            if (
+                volumeSlider.hasPointerCapture(
+                    event.pointerId
+                )
+            ) {
+                volumeSlider.releasePointerCapture(
+                    event.pointerId
+                );
+            }
+        }
+
+        volumeSlider.addEventListener(
+            "pointerup",
+            stopVolumeDrag
+        );
+
+        volumeSlider.addEventListener(
+            "pointercancel",
+            stopVolumeDrag
+        );
+
+        volumeSlider.addEventListener(
+            "keydown",
+            event => {
+                let value = volumePercent;
+
+                if (
+                    event.key === "ArrowRight" ||
+                    event.key === "ArrowUp"
+                ) {
+                    value++;
+                } else if (
+                    event.key === "ArrowLeft" ||
+                    event.key === "ArrowDown"
+                ) {
+                    value--;
+                } else if (event.key === "Home") {
+                    value = 0;
+                } else if (event.key === "End") {
+                    value = 100;
+                } else {
+                    return;
+                }
+
+                event.preventDefault();
+
+                volumeSlider.classList.add("is-active");
+
+                setVolume(value);
+            }
+        );
+
+        volumeSlider.addEventListener(
+            "keyup",
+            () => {
+                volumeSlider.classList.remove("is-active");
+            }
+        );
+
+        volumeSlider.addEventListener(
+            "blur",
+            () => {
+                volumeSlider.classList.remove("is-active");
+            }
+        );
+
+        setVolume(INITIAL_VOLUME);
+    </script>
+</body>
+</html>
