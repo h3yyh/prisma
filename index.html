@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
     <div class="start-screen" id="startScreen">
@@ -124,38 +124,42 @@
         const volumeSlider = $("volumeSlider");
         const volumeTrack = $("volumeTrack");
         const volumeValue = $("volumeValue");
-        const bgTree = $("bgTree");
         const skyLeafLayer = $("skyLeafLayer");
         const treeLeafLayer = $("treeLeafLayer");
+        const bgTree = $("bgTree");
         const hero = document.querySelector(".hero");
         const buttons = document.querySelectorAll(".menu-image");
 
         const DROP_TIME = 14.582;
+        const TEXT_PREPARE_TIME = .12;
         const INITIAL_VOLUME = 35;
-        const MAX_SKY_LEAVES = 20;
-        const SKY_LANES = 8;
+        const SKY_LEAF_COUNT = 14;
+        const SKY_LANES = 7;
         const skyLeafSprites = ["folha1.png","folha2.png","folha3.png","folha4.png"];
 
         let typingRun = 0;
         let currentLine;
         let musicStarted = false;
         let dropStarted = false;
+        let textPrepared = false;
         let musicIndex = 0;
         let musicClockStart = 0;
         let textFrame = 0;
+        let syncFrame = 0;
         let treeLeafTimer = 0;
-        let skyLeafTimer = 0;
-        let skyLanePool = [];
+        let treeLeafDelay = 0;
         let volumePercent = INITIAL_VOLUME;
         let draggingVolume = false;
         let lastFocusedElement;
+        let pendingPlayingHandler;
+        const preloadImages = [];
 
         selectSound.volume = .25;
         homeSound.volume = .25;
         openSound.volume = .35;
 
         const musicBlocks = [
-            {text:"rio",speed:90,effect:"cold"},
+            {text:"rio",speed:95,effect:"cold"},
             {text:".\n\n",speed:70,pause:500},
             {text:"...\n\n",speed:330,pause:1000},
             {text:"Já já vai começar de novo.\n\n",speed:35,pause:700},
@@ -165,6 +169,10 @@
         ];
 
         function createTimeline(){
+            const target = (DROP_TIME - TEXT_PREPARE_TIME) * 1000;
+            const characterTime = musicBlocks.reduce((sum,block) => sum + block.text.length * block.speed,0);
+            const pauseTime = musicBlocks.reduce((sum,block) => sum + (block.pause || 0),0);
+            const pauseScale = Math.max(0,(target - characterTime) / pauseTime);
             const events = [];
             let time = 0;
 
@@ -174,22 +182,28 @@
                     events.push({time,char,effect:block.effect || "normal"});
                 }
 
-                time += block.pause || 0;
+                time += (block.pause || 0) * pauseScale;
             }
 
-            const scale = DROP_TIME * 1000 / events.at(-1).time;
-
-            return events.map(event => ({
-                ...event,
-                time:event.time * scale
-            }));
+            return events;
         }
 
         const musicEvents = createTimeline();
         const wait = ms => new Promise(resolve => setTimeout(resolve,ms));
-        const nextFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
         const random = (min,max) => Math.random() * (max - min) + min;
         const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
+
+        function preloadVisuals(){
+            bgTree.decode?.().catch(() => {});
+
+            for(const source of [...skyLeafSprites,"folhaprisma.png?v=1"]){
+                const image = new Image();
+
+                image.src = source;
+                image.decode?.().catch(() => {});
+                preloadImages.push(image);
+            }
+        }
 
         function createTextLine(){
             currentLine = document.createElement("span");
@@ -205,13 +219,16 @@
         function appendCharacter(char,effect="normal"){
             if(char === "\n"){
                 createTextLine();
-                return;
+                return null;
             }
 
             const letter = document.createElement("span");
+
             letter.className = `typed-letter ${effect}`;
             letter.textContent = char === " " ? "\u00a0" : char;
             currentLine.appendChild(letter);
+
+            return letter;
         }
 
         function playSound(sound){
@@ -224,6 +241,7 @@
 
             startButton.disabled = true;
             playSound(openSound);
+            preloadVisuals();
 
             bgMusic.volume = 0;
 
@@ -252,13 +270,19 @@
             typingRun++;
             musicStarted = false;
             dropStarted = false;
+            textPrepared = false;
             musicIndex = 0;
             musicClockStart = 0;
-            skyLanePool = [];
 
             cancelAnimationFrame(textFrame);
+            cancelAnimationFrame(syncFrame);
             clearInterval(treeLeafTimer);
-            clearTimeout(skyLeafTimer);
+            clearTimeout(treeLeafDelay);
+
+            if(pendingPlayingHandler){
+                bgMusic.removeEventListener("playing",pendingPlayingHandler);
+                pendingPlayingHandler = null;
+            }
 
             document.body.classList.remove("drop-live");
             skyLeafLayer.replaceChildren();
@@ -274,10 +298,13 @@
 
         function startHomeSequence(){
             stopCurrentSequence();
+            prepareSkyLeaves();
             typePrelude(typingRun);
         }
 
         async function typePrelude(run){
+            const audioReady = prepareMusic();
+
             resetText();
 
             for(const char of "Tá tão..."){
@@ -293,11 +320,12 @@
 
             appendCharacter(" ");
             await wait(120);
+            await audioReady;
 
             if(run === typingRun) startMusicSequence(run);
         }
 
-        function waitForAudio(eventName,timeout=700){
+        function waitForAudio(eventName,timeout=1000){
             return new Promise(resolve => {
                 let finished = false;
 
@@ -320,7 +348,7 @@
             bgMusic.volume = 0;
 
             if(bgMusic.readyState < 1){
-                await waitForAudio("loadedmetadata",1200);
+                await waitForAudio("loadedmetadata",1500);
             }
 
             try{
@@ -333,33 +361,38 @@
         }
 
         async function startMusicSequence(run){
-            await prepareMusic();
-
             if(run !== typingRun) return;
 
-            bgMusic.volume = volumePercent / 100;
-            await nextFrame();
+            const f = appendCharacter("f","cold sync-f");
 
-            if(run !== typingRun) return;
+            bgMusic.volume = 0;
 
-            appendCharacter("f","cold");
+            pendingPlayingHandler = () => {
+                pendingPlayingHandler = null;
+
+                syncFrame = requestAnimationFrame(() => {
+                    if(run !== typingRun) return;
+
+                    f.classList.add("visible");
+                    bgMusic.volume = volumePercent / 100;
+
+                    musicStarted = true;
+                    musicIndex = 0;
+                    musicClockStart = bgMusic.currentTime;
+
+                    renderMusicText(run);
+                });
+            };
+
+            bgMusic.addEventListener("playing",pendingPlayingHandler,{once:true});
 
             try{
                 await bgMusic.play();
             }catch{
-                return;
+                bgMusic.removeEventListener("playing",pendingPlayingHandler);
+                pendingPlayingHandler = null;
+                f.remove();
             }
-
-            if(run !== typingRun){
-                bgMusic.pause();
-                return;
-            }
-
-            musicStarted = true;
-            musicIndex = 0;
-            musicClockStart = bgMusic.currentTime;
-
-            renderMusicText(run);
         }
 
         function renderMusicText(run){
@@ -369,15 +402,31 @@
 
             while(musicIndex < musicEvents.length && musicEvents[musicIndex].time <= elapsed){
                 const event = musicEvents[musicIndex++];
+
                 appendCharacter(event.char,event.effect);
             }
 
-            if(!dropStarted && musicIndex === musicEvents.length && elapsed >= DROP_TIME * 1000){
+            if(!textPrepared && musicIndex === musicEvents.length){
+                textPrepared = true;
+                prepareTextSlide();
+            }
+
+            if(!dropStarted && elapsed >= DROP_TIME * 1000){
                 triggerDrop();
             }
 
-            if(musicIndex < musicEvents.length || !dropStarted){
+            if(!dropStarted){
                 textFrame = requestAnimationFrame(() => renderMusicText(run));
+            }
+        }
+
+        function prepareTextSlide(){
+            const availableWidth = typeText.clientWidth;
+
+            for(const line of typeText.querySelectorAll(".typed-line")){
+                const distance = Math.max(0,(availableWidth - line.offsetWidth) / 2);
+
+                line.style.setProperty("--slide-x",`${distance}px`);
             }
         }
 
@@ -385,37 +434,52 @@
             if(dropStarted) return;
 
             dropStarted = true;
-            slideTextToLeft();
-            startTreeLeaves();
-            startSkyLeaves();
-        }
-
-        function slideTextToLeft(){
-            const lines = [...typeText.querySelectorAll(".typed-line")];
-            const originalLeft = lines.map(line => line.getBoundingClientRect().left);
-
             document.body.classList.add("drop-live");
 
-            lines.forEach((line,index) => {
-                const finalLeft = line.getBoundingClientRect().left;
-
-                line.animate(
-                    [
-                        {transform:`translateX(${originalLeft[index] - finalLeft}px)`},
-                        {transform:"translateX(0)"}
-                    ],
-                    {
-                        duration:900,
-                        easing:"cubic-bezier(.2,.8,.2,1)",
-                        fill:"both"
-                    }
-                );
-            });
+            treeLeafDelay = setTimeout(dropTreeLeaf,120);
+            treeLeafTimer = setInterval(dropTreeLeaf,3500);
         }
 
-        function startTreeLeaves(){
-            dropTreeLeaf();
-            treeLeafTimer = setInterval(dropTreeLeaf,3500);
+        function prepareSkyLeaves(){
+            const width = hero.clientWidth;
+            const height = hero.clientHeight;
+            const laneWidth = width / SKY_LANES;
+            const fragment = document.createDocumentFragment();
+
+            for(let index = 0;index < SKY_LEAF_COUNT;index++){
+                const leaf = new Image();
+                const lane = index % SKY_LANES;
+                const size = random(14,22);
+                const startX = clamp(
+                    lane * laneWidth + random(laneWidth * .15,laneWidth * .85),
+                    0,
+                    width - size
+                );
+
+                const startY = -size - random(15,160);
+                const wantedLeft = width * random(.08,.2);
+                const moveX = -Math.min(wantedLeft,startX + size * .7);
+                const moveY = height + size + random(60,140) - startY;
+                const duration = moveY / random(85,115);
+                const angle = random(-30,30);
+
+                leaf.className = "sky-leaf";
+                leaf.src = skyLeafSprites[index % skyLeafSprites.length];
+                leaf.alt = "";
+                leaf.style.width = `${size}px`;
+                leaf.style.left = `${startX}px`;
+                leaf.style.top = `${startY}px`;
+                leaf.style.opacity = random(.68,.92);
+                leaf.style.setProperty("--move-x",`${moveX}px`);
+                leaf.style.setProperty("--move-y",`${moveY}px`);
+                leaf.style.setProperty("--angle",`${angle}deg`);
+                leaf.style.setProperty("--duration",`${duration}s`);
+                leaf.style.setProperty("--delay",`${random(0,1.5)}s`);
+
+                fragment.appendChild(leaf);
+            }
+
+            skyLeafLayer.appendChild(fragment);
         }
 
         function dropTreeLeaf(){
@@ -426,7 +490,7 @@
 
             if(!treeRect.width) return;
 
-            const leaf = document.createElement("img");
+            const leaf = new Image();
             const startX = random(
                 treeRect.left + treeRect.width * .2,
                 treeRect.left + treeRect.width * .78
@@ -450,121 +514,18 @@
 
             treeLeafLayer.appendChild(leaf);
 
-            const animation = leaf.animate(
-                [
-                    {opacity:0,transform:"translate(0,0) rotate(0deg)",offset:0},
-                    {opacity:1,transform:`translate(${drift * .08}px,${fall * .08}px) rotate(${rotation * .08}deg)`,offset:.08},
-                    {opacity:1,transform:`translate(${drift * fade}px,${fall * fade}px) rotate(${rotation * fade}deg)`,offset:fade},
-                    {opacity:0,transform:`translate(${drift}px,${fall}px) rotate(${rotation}deg)`,offset:1}
-                ],
-                {
-                    duration:random(2600,3600),
-                    easing:"linear",
-                    fill:"forwards"
-                }
-            );
+            const animation = leaf.animate([
+                {opacity:0,transform:"translate3d(0,0,0) rotate(0deg)",offset:0},
+                {opacity:1,transform:`translate3d(${drift * .08}px,${fall * .08}px,0) rotate(${rotation * .08}deg)`,offset:.08},
+                {opacity:1,transform:`translate3d(${drift * fade}px,${fall * fade}px,0) rotate(${rotation * fade}deg)`,offset:fade},
+                {opacity:0,transform:`translate3d(${drift}px,${fall}px,0) rotate(${rotation}deg)`,offset:1}
+            ],{
+                duration:random(2600,3600),
+                easing:"linear",
+                fill:"forwards"
+            });
 
             animation.onfinish = () => leaf.remove();
-        }
-
-        function refillSkyLanes(){
-            skyLanePool = Array.from({length:SKY_LANES},(_,index) => index);
-
-            for(let index = skyLanePool.length - 1; index > 0; index--){
-                const other = Math.floor(Math.random() * (index + 1));
-                [skyLanePool[index],skyLanePool[other]] = [skyLanePool[other],skyLanePool[index]];
-            }
-        }
-
-        function nextSkyLane(){
-            if(!skyLanePool.length) refillSkyLanes();
-            return skyLanePool.pop();
-        }
-
-        function createSkyLeaf(initialDepth){
-            if(
-                !dropStarted ||
-                document.hidden ||
-                skyLeafLayer.childElementCount >= MAX_SKY_LEAVES
-            ) return;
-
-            const width = hero.clientWidth;
-            const height = hero.clientHeight;
-            const size = random(14,22);
-            const laneWidth = width / SKY_LANES;
-            const lane = nextSkyLane();
-
-            const startX = clamp(
-                lane * laneWidth + random(laneWidth * .12,laneWidth * .88),
-                0,
-                width - size
-            );
-
-            const startY = -size - (
-                initialDepth === undefined
-                    ? random(8,height * .16)
-                    : initialDepth
-            );
-
-            const wantedLeft = width * random(.1,.25);
-            const moveX = -Math.min(wantedLeft,startX + size * .75);
-            const moveY = height + size + random(40,100) - startY;
-            const duration = moveY / random(85,115) * 1000;
-            const angle = random(-30,30);
-
-            const leaf = document.createElement("img");
-
-            leaf.className = "sky-leaf";
-            leaf.src = skyLeafSprites[Math.floor(Math.random() * skyLeafSprites.length)];
-            leaf.alt = "";
-            leaf.style.width = `${size}px`;
-            leaf.style.left = `${startX}px`;
-            leaf.style.top = `${startY}px`;
-            leaf.style.opacity = random(.68,.92);
-
-            skyLeafLayer.appendChild(leaf);
-
-            const animation = leaf.animate(
-                [
-                    {transform:`translate(0,0) rotate(${angle}deg)`},
-                    {transform:`translate(${moveX}px,${moveY}px) rotate(${angle}deg)`}
-                ],
-                {
-                    duration,
-                    easing:"linear",
-                    fill:"forwards"
-                }
-            );
-
-            animation.onfinish = () => leaf.remove();
-        }
-
-        function scheduleSkyLeaf(){
-            if(!dropStarted) return;
-
-            createSkyLeaf();
-
-            skyLeafTimer = setTimeout(
-                scheduleSkyLeaf,
-                random(550,800)
-            );
-        }
-
-        function startSkyLeaves(){
-            refillSkyLanes();
-
-            for(let index = 0; index < 12; index++){
-                createSkyLeaf(
-                    index < 4
-                        ? random(4,35)
-                        : random(40,hero.clientHeight * .65)
-                );
-            }
-
-            skyLeafTimer = setTimeout(
-                scheduleSkyLeaf,
-                random(450,700)
-            );
         }
 
         document.addEventListener("visibilitychange",() => {
@@ -615,7 +576,6 @@
             profileOverlay.setAttribute("aria-hidden","true");
             profileButton.setAttribute("aria-expanded","false");
             document.body.classList.remove("profile-open");
-
             lastFocusedElement?.focus();
         }
 
@@ -651,6 +611,7 @@
 
         function setVolumeFromPointer(event){
             const rect = volumeTrack.getBoundingClientRect();
+
             setVolume((event.clientX - rect.left) / rect.width * 100);
         }
 
