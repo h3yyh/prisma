@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=30">
+    <link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
     <div class="start-screen" id="startScreen">
@@ -142,14 +142,22 @@
             for(const block of musicBlocks){
                 for(const char of block.text){
                     time += block.speed;
-                    events.push({time,char,effect:block.effect || "normal"});
+                    events.push({
+                        time,
+                        char,
+                        effect:block.effect || "normal"
+                    });
                 }
 
                 time += block.pause || 0;
             }
 
             const scale = TEXT_DURATION / events[events.length - 1].time;
-            return events.map(event => ({...event,time:event.time * scale}));
+
+            return events.map(event => ({
+                ...event,
+                time:event.time * scale
+            }));
         }
 
         const musicEvents = createTimeline();
@@ -170,11 +178,15 @@
         }
 
         function appendCharacter(char,effect="normal"){
-            if(char === "\n") return createTextLine();
+            if(char === "\n"){
+                return createTextLine();
+            }
 
             const letter = document.createElement("span");
+
             letter.className = `typed-letter ${effect}`;
             letter.textContent = char === " " ? "\u00a0" : char;
+
             currentLine.appendChild(letter);
         }
 
@@ -184,7 +196,9 @@
         }
 
         async function beginExperience(){
-            if(document.body.classList.contains("started")) return;
+            if(document.body.classList.contains("started")){
+                return;
+            }
 
             startButton.disabled = true;
             playSound(openSound);
@@ -199,13 +213,21 @@
 
             document.body.classList.add("started");
             startScreen.classList.add("leaving");
-            setTimeout(() => startScreen.remove(),400);
+
+            setTimeout(() => {
+                startScreen.remove();
+            },400);
         }
 
         startButton.addEventListener("click",beginExperience);
 
         headerWrap.addEventListener("animationend",event => {
-            if(event.target !== headerWrap || event.animationName !== "headerDrop") return;
+            if(
+                event.target !== headerWrap ||
+                event.animationName !== "headerDrop"
+            ){
+                return;
+            }
 
             headerWrap.classList.add("ready");
             setTimeout(startHomeSequence,1000);
@@ -222,6 +244,7 @@
             clearTimeout(skyLeafTimer);
 
             document.body.classList.remove("drop-live");
+
             skyLeafLayer.replaceChildren();
             treeLeafLayer.replaceChildren();
 
@@ -242,7 +265,9 @@
             resetText();
 
             for(const char of "Tá tão..."){
-                if(run !== typingRun) return;
+                if(run !== typingRun){
+                    return;
+                }
 
                 appendCharacter(char);
                 await wait(35);
@@ -250,12 +275,16 @@
 
             await wait(1000);
 
-            if(run !== typingRun) return;
+            if(run !== typingRun){
+                return;
+            }
 
             appendCharacter(" ");
             await wait(120);
 
-            if(run === typingRun) startMusicSequence(run);
+            if(run === typingRun){
+                startMusicSequence(run);
+            }
         }
 
         function waitForAudio(eventName,timeout=1200){
@@ -291,10 +320,17 @@
         }
 
         async function waitForMusicTime(target,run){
-            while(run === typingRun && !bgMusic.paused){
-                const remaining = target - bgMusic.currentTime;
+            while(
+                run === typingRun &&
+                !bgMusic.paused
+            ){
+                const remaining =
+                    target -
+                    bgMusic.currentTime;
 
-                if(remaining <= 0) return true;
+                if(remaining <= 0){
+                    return true;
+                }
 
                 remaining > .06
                     ? await wait((remaining - .03) * 1000)
@@ -307,9 +343,12 @@
         async function startMusicSequence(run){
             await prepareMusic();
 
-            if(run !== typingRun) return;
+            if(run !== typingRun){
+                return;
+            }
 
-            bgMusic.volume = volumePercent / 100;
+            bgMusic.volume =
+                volumePercent / 100;
 
             try{
                 await bgMusic.play();
@@ -337,19 +376,31 @@
         }
 
         function renderMusicText(run){
-            if(!musicStarted || run !== typingRun) return;
+            if(
+                !musicStarted ||
+                run !== typingRun
+            ){
+                return;
+            }
 
-            const elapsed = Math.max(
-                0,
-                bgMusic.currentTime - FIRST_NOTE_TIME
-            ) * 1000;
+            const elapsed =
+                Math.max(
+                    0,
+                    bgMusic.currentTime -
+                    FIRST_NOTE_TIME
+                ) * 1000;
 
             while(
                 musicIndex < musicEvents.length &&
                 musicEvents[musicIndex].time <= elapsed
             ){
-                const event = musicEvents[musicIndex++];
-                appendCharacter(event.char,event.effect);
+                const event =
+                    musicEvents[musicIndex++];
+
+                appendCharacter(
+                    event.char,
+                    event.effect
+                );
             }
 
             if(
@@ -360,24 +411,34 @@
                 triggerDrop();
             }
 
-            if(musicIndex < musicEvents.length || !dropStarted){
-                textFrame = requestAnimationFrame(
-                    () => renderMusicText(run)
-                );
+            if(
+                musicIndex < musicEvents.length ||
+                !dropStarted
+            ){
+                textFrame =
+                    requestAnimationFrame(
+                        () => renderMusicText(run)
+                    );
             }
         }
 
         function triggerDrop(){
-            if(dropStarted) return;
+            if(dropStarted){
+                return;
+            }
 
             dropStarted = true;
+
             slideTextToLeft();
             startTreeLeaves();
             startSkyLeaves();
         }
 
         function slideTextToLeft(){
-            const lines = [...typeText.querySelectorAll(".typed-line")];
+            const lines = [
+                ...typeText.querySelectorAll(".typed-line")
+            ];
+
             const oldLeft = lines.map(
                 line => line.getBoundingClientRect().left
             );
@@ -391,8 +452,14 @@
 
                 line.animate(
                     [
-                        {transform:`translateX(${distance}px)`},
-                        {transform:"translateX(0)"}
+                        {
+                            transform:
+                                `translateX(${distance}px)`
+                        },
+                        {
+                            transform:
+                                "translateX(0)"
+                        }
                     ],
                     {
                         duration:900,
@@ -411,51 +478,82 @@
         function scheduleTreeLeaf(){
             clearTimeout(treeLeafTimer);
 
-            treeLeafTimer = setTimeout(() => {
-                dropTreeLeaf();
+            treeLeafTimer = setTimeout(
+                () => {
+                    dropTreeLeaf();
 
-                if(dropStarted){
-                    scheduleTreeLeaf();
-                }
-            },random(3000,4100));
+                    if(dropStarted){
+                        scheduleTreeLeaf();
+                    }
+                },
+                random(3000,4100)
+            );
         }
 
         function dropTreeLeaf(){
-            if(!dropStarted || document.hidden) return;
+            if(
+                !dropStarted ||
+                document.hidden
+            ){
+                return;
+            }
 
-            const heroRect = hero.getBoundingClientRect();
-            const treeRect = bgTree.getBoundingClientRect();
+            const heroRect =
+                hero.getBoundingClientRect();
 
-            if(!treeRect.width) return;
+            const treeRect =
+                bgTree.getBoundingClientRect();
 
-            const leaf = document.createElement("img");
+            if(!treeRect.width){
+                return;
+            }
+
+            const leaf =
+                document.createElement("img");
 
             const startX = random(
-                treeRect.left + treeRect.width * .20,
-                treeRect.left + treeRect.width * .78
+                treeRect.left +
+                    treeRect.width * .20,
+                treeRect.left +
+                    treeRect.width * .78
             ) - heroRect.left;
 
             const startY = random(
-                treeRect.top + treeRect.height * .04,
-                treeRect.top + treeRect.height * .30
+                treeRect.top +
+                    treeRect.height * .04,
+                treeRect.top +
+                    treeRect.height * .30
             ) - heroRect.top;
 
             const fall = Math.max(
                 100,
-                heroRect.height - 20 - startY
+                heroRect.height -
+                    20 -
+                    startY
             );
 
             const fade = clamp(
-                (heroRect.height - 105 - startY) / fall,
+                (
+                    heroRect.height -
+                    105 -
+                    startY
+                ) / fall,
                 .18,
                 .92
             );
 
-            const wind = -random(42,85);
-            const rotation = random(-28,28);
+            const wind =
+                -random(42,85);
 
-            leaf.className = "tree-falling-leaf";
-            leaf.src = "folhaprisma.png?v=1";
+            const rotation =
+                random(-28,28);
+
+            leaf.className =
+                "tree-falling-leaf";
+
+            leaf.src =
+                "folhaprisma.png?v=1";
+
             leaf.alt = "";
             leaf.style.left = `${startX}px`;
             leaf.style.top = `${startY}px`;
@@ -466,22 +564,26 @@
                 [
                     {
                         opacity:0,
-                        transform:"translate(0,0) rotate(0deg)",
+                        transform:
+                            "translate(0,0) rotate(0deg)",
                         offset:0
                     },
                     {
                         opacity:1,
-                        transform:`translate(${wind * .08}px,${fall * .08}px) rotate(${rotation * .08}deg)`,
+                        transform:
+                            `translate(${wind * .08}px,${fall * .08}px) rotate(${rotation * .08}deg)`,
                         offset:.08
                     },
                     {
                         opacity:1,
-                        transform:`translate(${wind * fade}px,${fall * fade}px) rotate(${rotation * fade}deg)`,
+                        transform:
+                            `translate(${wind * fade}px,${fall * fade}px) rotate(${rotation * fade}deg)`,
                         offset:fade
                     },
                     {
                         opacity:0,
-                        transform:`translate(${wind}px,${fall}px) rotate(${rotation}deg)`,
+                        transform:
+                            `translate(${wind}px,${fall}px) rotate(${rotation}deg)`,
                         offset:1
                     }
                 ],
@@ -492,7 +594,8 @@
                 }
             );
 
-            animation.onfinish = () => leaf.remove();
+            animation.onfinish =
+                () => leaf.remove();
         }
 
         function refillSkyLanes(){
@@ -502,13 +605,16 @@
             );
 
             for(
-                let index = skyLanePool.length - 1;
+                let index =
+                    skyLanePool.length - 1;
                 index > 0;
                 index--
             ){
-                const other = Math.floor(
-                    Math.random() * (index + 1)
-                );
+                const other =
+                    Math.floor(
+                        Math.random() *
+                        (index + 1)
+                    );
 
                 [
                     skyLanePool[index],
@@ -532,16 +638,26 @@
             if(
                 !dropStarted ||
                 document.hidden ||
-                skyLeafLayer.childElementCount >= MAX_SKY_LEAVES
+                skyLeafLayer.childElementCount >=
+                    MAX_SKY_LEAVES
             ){
                 return;
             }
 
-            const width = hero.clientWidth;
-            const height = hero.clientHeight;
-            const size = random(14,22);
-            const laneWidth = width / SKY_LANES;
-            const lane = nextSkyLane();
+            const width =
+                hero.clientWidth;
+
+            const height =
+                hero.clientHeight;
+
+            const size =
+                random(14,22);
+
+            const laneWidth =
+                width / SKY_LANES;
+
+            const lane =
+                nextSkyLane();
 
             const startX = clamp(
                 lane * laneWidth +
@@ -561,10 +677,11 @@
                 width *
                 random(.18,.30);
 
-            const moveX = -Math.min(
-                wantedWind,
-                startX + size
-            );
+            const moveX =
+                -Math.min(
+                    wantedWind,
+                    startX + size
+                );
 
             const moveY =
                 height +
@@ -579,6 +696,32 @@
 
             const angle =
                 random(-30,30);
+
+            /*
+            Oscilação lateral bem pequena.
+            A amplitude começa maior e vai diminuindo.
+            */
+            const sway =
+                random(2.5,6.5);
+
+            const swayDirection =
+                Math.random() < .5
+                    ? -1
+                    : 1;
+
+            const rotationSway =
+                random(.5,1.4) *
+                swayDirection;
+
+            const skyFrame = (
+                progress,
+                swing,
+                turn=0
+            ) => ({
+                offset:progress,
+                transform:
+                    `translate(${moveX * progress + swing}px,${moveY * progress}px) rotate(${angle + turn}deg)`
+            });
 
             const leaf =
                 document.createElement("img");
@@ -605,14 +748,39 @@
 
             const animation = leaf.animate(
                 [
-                    {
-                        transform:
-                            `translate(0,0) rotate(${angle}deg)`
-                    },
-                    {
-                        transform:
-                            `translate(${moveX}px,${moveY}px) rotate(${angle}deg)`
-                    }
+                    skyFrame(0,0,0),
+
+                    skyFrame(
+                        .12,
+                        sway * swayDirection,
+                        rotationSway
+                    ),
+
+                    skyFrame(
+                        .27,
+                        -sway * .72 * swayDirection,
+                        -rotationSway * .72
+                    ),
+
+                    skyFrame(
+                        .44,
+                        sway * .46 * swayDirection,
+                        rotationSway * .46
+                    ),
+
+                    skyFrame(
+                        .62,
+                        -sway * .28 * swayDirection,
+                        -rotationSway * .28
+                    ),
+
+                    skyFrame(
+                        .79,
+                        sway * .13 * swayDirection,
+                        rotationSway * .13
+                    ),
+
+                    skyFrame(1,0,0)
                 ],
                 {
                     duration,
@@ -621,7 +789,8 @@
                 }
             );
 
-            animation.onfinish = () => leaf.remove();
+            animation.onfinish =
+                () => leaf.remove();
         }
 
         function startSkyLeaves(){
@@ -629,8 +798,12 @@
             scheduleSkyLeaf(SKY_BURST);
         }
 
-        function scheduleSkyLeaf(burstLeft=0){
-            if(!dropStarted) return;
+        function scheduleSkyLeaf(
+            burstLeft=0
+        ){
+            if(!dropStarted){
+                return;
+            }
 
             createSkyLeaf();
 
@@ -650,18 +823,21 @@
             );
         }
 
-        document.addEventListener("visibilitychange",() => {
-            if(
-                document.hidden ||
-                !musicStarted ||
-                dropStarted
-            ){
-                return;
-            }
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+                if(
+                    document.hidden ||
+                    !musicStarted ||
+                    dropStarted
+                ){
+                    return;
+                }
 
-            cancelAnimationFrame(textFrame);
-            renderMusicText(typingRun);
-        });
+                cancelAnimationFrame(textFrame);
+                renderMusicText(typingRun);
+            }
+        );
 
         function resetButtons(){
             buttons.forEach(button => {
@@ -673,29 +849,38 @@
         }
 
         buttons.forEach(button =>
-            button.addEventListener("click",event => {
-                event.preventDefault();
+            button.addEventListener(
+                "click",
+                event => {
+                    event.preventDefault();
 
-                playSound(selectSound);
-                resetButtons();
+                    playSound(selectSound);
+                    resetButtons();
 
-                button.classList.add("active");
+                    button.classList.add("active");
 
-                button.querySelector("img").src =
-                    button.dataset.active;
-            })
+                    button.querySelector("img").src =
+                        button.dataset.active;
+                }
+            )
         );
 
-        homeButton.addEventListener("click",event => {
-            event.preventDefault();
+        homeButton.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
 
-            playSound(homeSound);
-            resetButtons();
-            startHomeSequence();
-        });
+                playSound(homeSound);
+                resetButtons();
+                startHomeSequence();
+            }
+        );
 
         function setProfile(open){
-            profileOverlay.classList.toggle("open",open);
+            profileOverlay.classList.toggle(
+                "open",
+                open
+            );
 
             profileOverlay.setAttribute(
                 "aria-hidden",
@@ -717,33 +902,42 @@
                 : lastFocusedElement?.focus();
         }
 
-        profileButton.addEventListener("click",() => {
-            lastFocusedElement =
-                document.activeElement;
+        profileButton.addEventListener(
+            "click",
+            () => {
+                lastFocusedElement =
+                    document.activeElement;
 
-            playSound(selectSound);
-            setProfile(true);
-        });
+                playSound(selectSound);
+                setProfile(true);
+            }
+        );
 
         profileClose.addEventListener(
             "click",
             () => setProfile(false)
         );
 
-        profileOverlay.addEventListener("click",event => {
-            if(event.target === profileOverlay){
-                setProfile(false);
+        profileOverlay.addEventListener(
+            "click",
+            event => {
+                if(event.target === profileOverlay){
+                    setProfile(false);
+                }
             }
-        });
+        );
 
-        document.addEventListener("keydown",event => {
-            if(
-                event.key === "Escape" &&
-                profileOverlay.classList.contains("open")
-            ){
-                setProfile(false);
+        document.addEventListener(
+            "keydown",
+            event => {
+                if(
+                    event.key === "Escape" &&
+                    profileOverlay.classList.contains("open")
+                ){
+                    setProfile(false);
+                }
             }
-        });
+        );
 
         function setVolume(value){
             volumePercent = clamp(
@@ -830,7 +1024,9 @@
         );
 
         function stopVolumeDrag(event){
-            if(!draggingVolume) return;
+            if(!draggingVolume){
+                return;
+            }
 
             draggingVolume = false;
 
@@ -897,10 +1093,16 @@
             }
         );
 
-        ["keyup","blur"].forEach(type =>
-            volumeSlider.addEventListener(type,() =>
-                volumeSlider.classList.remove("is-active")
-            )
+        ["keyup","blur"].forEach(
+            type =>
+                volumeSlider.addEventListener(
+                    type,
+                    () => {
+                        volumeSlider.classList.remove(
+                            "is-active"
+                        );
+                    }
+                )
         );
 
         setVolume(INITIAL_VOLUME);
