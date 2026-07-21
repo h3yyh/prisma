@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>PRISMA</title>
     <link rel="icon" type="image/png" href="PRISMA.png?v=1">
-    <link rel="stylesheet" href="style.css?v=31">
+    <link rel="stylesheet" href="style.css?v=32">
 </head>
 <body>
     <div class="start-screen" id="startScreen">
@@ -26,9 +26,11 @@
                 <a class="menu-image personagens" href="#" data-normal="personagens.png?v=2" data-active="personagens-active.png?v=2">
                     <img src="personagens.png?v=2" alt="Personagens">
                 </a>
+
                 <a class="menu-image campanhas" href="#" data-normal="campanhas.png?v=2" data-active="campanhas-active.png?v=2">
                     <img src="campanhas.png?v=2" alt="Campanhas">
                 </a>
+
                 <a class="menu-image sistema" href="#" data-normal="sistema.png?v=2" data-active="sistema-active.png?v=2">
                     <img src="sistema.png?v=2" alt="Sistema">
                 </a>
@@ -47,7 +49,10 @@
         <div class="sky-leaf-layer" id="skyLeafLayer"></div>
         <img class="bg-tree" id="bgTree" src="deltarune-tree.gif?v=1" alt="">
         <div class="tree-leaf-layer" id="treeLeafLayer"></div>
-        <section class="home-text"><h1 id="typeText"></h1></section>
+
+        <section class="home-text">
+            <h1 id="typeText"></h1>
+        </section>
     </main>
 
     <div class="profile-overlay" id="profileOverlay" aria-hidden="true">
@@ -105,22 +110,54 @@
     <script>
         const $ = id => document.getElementById(id);
 
-        const startScreen = $("startScreen"), startButton = $("startButton"), headerWrap = $("headerWrap");
-        const homeButton = $("homeButton"), typeText = $("typeText"), profileButton = $("profileButton");
-        const profileOverlay = $("profileOverlay"), profileClose = $("profileClose");
-        const selectSound = $("selectSound"), homeSound = $("homeSound"), openSound = $("openSound"), bgMusic = $("bgMusic");
-        const volumeSlider = $("volumeSlider"), volumeTrack = $("volumeTrack"), volumeValue = $("volumeValue");
-        const bgTree = $("bgTree"), skyLeafLayer = $("skyLeafLayer"), treeLeafLayer = $("treeLeafLayer");
-        const hero = document.querySelector(".hero"), buttons = document.querySelectorAll(".menu-image");
+        const startScreen = $("startScreen");
+        const startButton = $("startButton");
+        const headerWrap = $("headerWrap");
+        const homeButton = $("homeButton");
+        const typeText = $("typeText");
+        const profileButton = $("profileButton");
+        const profileOverlay = $("profileOverlay");
+        const profileClose = $("profileClose");
+        const selectSound = $("selectSound");
+        const homeSound = $("homeSound");
+        const openSound = $("openSound");
+        const bgMusic = $("bgMusic");
+        const volumeSlider = $("volumeSlider");
+        const volumeTrack = $("volumeTrack");
+        const volumeValue = $("volumeValue");
+        const bgTree = $("bgTree");
+        const skyLeafLayer = $("skyLeafLayer");
+        const treeLeafLayer = $("treeLeafLayer");
+        const hero = document.querySelector(".hero");
+        const buttons = document.querySelectorAll(".menu-image");
 
-        const FIRST_NOTE_TIME = .8373, DROP_TIME = 14.582;
+        const FIRST_NOTE_TIME = .8373;
+        const DROP_TIME = 14.582;
         const TEXT_DURATION = (DROP_TIME - FIRST_NOTE_TIME) * 1000;
-        const INITIAL_VOLUME = 35, MAX_SKY_LEAVES = 20, SKY_LANES = 10, SKY_BURST = 12;
-        const skyLeafSprites = ["folha1.png","folha2.png","folha3.png","folha4.png"];
+        const INITIAL_VOLUME = 35;
+        const MAX_SKY_LEAVES = 20;
+        const SKY_LANES = 10;
+        const SKY_BURST = 12;
 
-        let typingRun = 0, currentLine, musicStarted = false, dropStarted = false, musicIndex = 0;
-        let textFrame = 0, treeLeafTimer = 0, skyLeafTimer = 0, skyLanePool = [];
-        let volumePercent = INITIAL_VOLUME, draggingVolume = false, lastFocusedElement;
+        const skyLeafSprites = [
+            "folha1.png",
+            "folha2.png",
+            "folha3.png",
+            "folha4.png"
+        ];
+
+        let typingRun = 0;
+        let currentLine;
+        let musicStarted = false;
+        let dropStarted = false;
+        let musicIndex = 0;
+        let textFrame = 0;
+        let treeLeafTimer = 0;
+        let skyLeafTimer = 0;
+        let skyLanePool = [];
+        let volumePercent = INITIAL_VOLUME;
+        let draggingVolume = false;
+        let lastFocusedElement;
 
         selectSound.volume = homeSound.volume = .25;
         openSound.volume = .35;
@@ -142,6 +179,7 @@
             for(const block of musicBlocks){
                 for(const char of block.text){
                     time += block.speed;
+
                     events.push({
                         time,
                         char,
@@ -152,7 +190,9 @@
                 time += block.pause || 0;
             }
 
-            const scale = TEXT_DURATION / events[events.length - 1].time;
+            const scale =
+                TEXT_DURATION /
+                events[events.length - 1].time;
 
             return events.map(event => ({
                 ...event,
@@ -179,7 +219,8 @@
 
         function appendCharacter(char,effect="normal"){
             if(char === "\n"){
-                return createTextLine();
+                createTextLine();
+                return;
             }
 
             const letter = document.createElement("span");
@@ -214,9 +255,7 @@
             document.body.classList.add("started");
             startScreen.classList.add("leaving");
 
-            setTimeout(() => {
-                startScreen.remove();
-            },400);
+            setTimeout(() => startScreen.remove(),400);
         }
 
         startButton.addEventListener("click",beginExperience);
@@ -235,7 +274,8 @@
 
         function stopCurrentSequence(){
             typingRun++;
-            musicStarted = dropStarted = false;
+            musicStarted = false;
+            dropStarted = false;
             musicIndex = 0;
             skyLanePool = [];
 
@@ -273,14 +313,7 @@
                 await wait(35);
             }
 
-            await wait(1000);
-
-            if(run !== typingRun){
-                return;
-            }
-
-            appendCharacter(" ");
-            await wait(120);
+            await wait(1120);
 
             if(run === typingRun){
                 startMusicSequence(run);
@@ -332,9 +365,11 @@
                     return true;
                 }
 
-                remaining > .06
-                    ? await wait((remaining - .03) * 1000)
-                    : await frame();
+                if(remaining > .06){
+                    await wait((remaining - .03) * 1000);
+                }else{
+                    await frame();
+                }
             }
 
             return false;
@@ -364,14 +399,22 @@
             musicStarted = true;
             musicIndex = 0;
 
+            const firstNoteReached =
+                await waitForMusicTime(
+                    FIRST_NOTE_TIME,
+                    run
+                );
+
             if(
-                !await waitForMusicTime(FIRST_NOTE_TIME,run) ||
+                !firstNoteReached ||
                 run !== typingRun
             ){
                 return;
             }
 
+            appendCharacter(" ");
             appendCharacter("f","cold");
+
             renderMusicText(run);
         }
 
@@ -457,8 +500,7 @@
                                 `translateX(${distance}px)`
                         },
                         {
-                            transform:
-                                "translateX(0)"
+                            transform:"translateX(0)"
                         }
                     ],
                     {
@@ -478,16 +520,13 @@
         function scheduleTreeLeaf(){
             clearTimeout(treeLeafTimer);
 
-            treeLeafTimer = setTimeout(
-                () => {
-                    dropTreeLeaf();
+            treeLeafTimer = setTimeout(() => {
+                dropTreeLeaf();
 
-                    if(dropStarted){
-                        scheduleTreeLeaf();
-                    }
-                },
-                random(3000,4100)
-            );
+                if(dropStarted){
+                    scheduleTreeLeaf();
+                }
+            },random(3000,4100));
         }
 
         function dropTreeLeaf(){
@@ -542,11 +581,8 @@
                 .92
             );
 
-            const wind =
-                -random(42,85);
-
-            const rotation =
-                random(-28,28);
+            const wind = -random(42,85);
+            const rotation = random(-28,28);
 
             leaf.className =
                 "tree-falling-leaf";
@@ -697,23 +733,19 @@
             const angle =
                 random(-30,30);
 
-            /*
-            Oscilação lateral bem pequena.
-            A amplitude começa maior e vai diminuindo.
-            */
             const sway =
                 random(2.5,6.5);
 
-            const swayDirection =
+            const direction =
                 Math.random() < .5
                     ? -1
                     : 1;
 
             const rotationSway =
                 random(.5,1.4) *
-                swayDirection;
+                direction;
 
-            const skyFrame = (
+            const keyframe = (
                 progress,
                 swing,
                 turn=0
@@ -748,39 +780,33 @@
 
             const animation = leaf.animate(
                 [
-                    skyFrame(0,0,0),
-
-                    skyFrame(
+                    keyframe(0,0),
+                    keyframe(
                         .12,
-                        sway * swayDirection,
+                        sway * direction,
                         rotationSway
                     ),
-
-                    skyFrame(
+                    keyframe(
                         .27,
-                        -sway * .72 * swayDirection,
+                        -sway * .72 * direction,
                         -rotationSway * .72
                     ),
-
-                    skyFrame(
+                    keyframe(
                         .44,
-                        sway * .46 * swayDirection,
+                        sway * .46 * direction,
                         rotationSway * .46
                     ),
-
-                    skyFrame(
+                    keyframe(
                         .62,
-                        -sway * .28 * swayDirection,
+                        -sway * .28 * direction,
                         -rotationSway * .28
                     ),
-
-                    skyFrame(
+                    keyframe(
                         .79,
-                        sway * .13 * swayDirection,
+                        sway * .13 * direction,
                         rotationSway * .13
                     ),
-
-                    skyFrame(1,0,0)
+                    keyframe(1,0)
                 ],
                 {
                     duration,
@@ -798,9 +824,7 @@
             scheduleSkyLeaf(SKY_BURST);
         }
 
-        function scheduleSkyLeaf(
-            burstLeft=0
-        ){
+        function scheduleSkyLeaf(burstLeft=0){
             if(!dropStarted){
                 return;
             }
@@ -848,7 +872,7 @@
             });
         }
 
-        buttons.forEach(button =>
+        buttons.forEach(button => {
             button.addEventListener(
                 "click",
                 event => {
@@ -862,8 +886,8 @@
                     button.querySelector("img").src =
                         button.dataset.active;
                 }
-            )
-        );
+            );
+        });
 
         homeButton.addEventListener(
             "click",
@@ -897,9 +921,11 @@
                 open
             );
 
-            open
-                ? profileClose.focus()
-                : lastFocusedElement?.focus();
+            if(open){
+                profileClose.focus();
+            }else{
+                lastFocusedElement?.focus();
+            }
         }
 
         profileButton.addEventListener(
@@ -1093,17 +1119,16 @@
             }
         );
 
-        ["keyup","blur"].forEach(
-            type =>
-                volumeSlider.addEventListener(
-                    type,
-                    () => {
-                        volumeSlider.classList.remove(
-                            "is-active"
-                        );
-                    }
-                )
-        );
+        ["keyup","blur"].forEach(type => {
+            volumeSlider.addEventListener(
+                type,
+                () => {
+                    volumeSlider.classList.remove(
+                        "is-active"
+                    );
+                }
+            );
+        });
 
         setVolume(INITIAL_VOLUME);
     </script>
